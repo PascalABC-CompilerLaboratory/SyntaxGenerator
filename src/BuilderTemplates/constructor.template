@@ -1,0 +1,10 @@
+public <$NodeName$>(<$ConstructorFieldsParams$>)
+{
+    <$ConstructorFieldsInit$>
+}
+
+public <$NodeName$>(<$ConstructorFieldsParams$>, SourceContext sc)
+{
+    <$ConstructorFieldsInit$>
+    source_context = sc;
+}
