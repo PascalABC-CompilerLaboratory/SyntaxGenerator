@@ -73,10 +73,16 @@
     <Compile Include="Visitors\Base\BaseEnterExitVisitor.cs" />
     <Compile Include="Visitors\Base\CollectNamespaces.cs" />
     <Compile Include="Visitors\Base\CollectUpperNodesVisitor.cs" />
+    <Compile Include="Visitors\Base\FindMainIdentsVisitor.cs" />
+    <Compile Include="Visitors\Base\HasStatementVisitor.cs" />
     <Compile Include="Visitors\Experimental\GroupNodesVisitor.cs" />
     <Compile Include="Visitors\Universal\CountNodesVisitor.cs" />
     <Compile Include="Visitors\Universal\DeleteRedundantBeginEnds.cs" />
     <Compile Include="Visitors\Universal\SimplePrettyPrinterVisitor.cs" />
+    <Compile Include="Visitors\Yield\DeleteAllLocalDefs.cs" />
+    <Compile Include="Visitors\Yield\DeleteLocalDefs.cs" />
+    <Compile Include="Visitors\Yield\LoweringVisitor.cs" />
+    <Compile Include="Visitors\Yield\ProcessYieldsCapturedVars.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
