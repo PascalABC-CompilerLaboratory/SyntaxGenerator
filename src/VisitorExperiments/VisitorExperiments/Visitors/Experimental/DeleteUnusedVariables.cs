@@ -48,9 +48,6 @@ namespace SyntaxVisitors
 
                 visitNode = false;
             }
-
-            if (st is class_definition)
-                visitNode = false;
         }
 
         public override void Exit(syntax_tree_node st)

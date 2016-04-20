@@ -53,11 +53,20 @@ namespace SyntaxVisitors
 
                 CurrentNamespace = new Namespace(CurrentNamespace, procedureName);
             }
+
+            if (st is class_definition)
+            {
+                string className = (UpperNode() as type_declaration)?.type_name.name;
+
+                Debug.Assert(className != null);
+                
+                CurrentNamespace = new Namespace(CurrentNamespace, className);
+            }
         }
 
         public override void Exit(syntax_tree_node st)
         {
-            if (st is procedure_definition)
+            if (st is procedure_definition || st is class_definition)
                 CurrentNamespace = CurrentNamespace.ParentNamespace;
 
             base.Exit(st);

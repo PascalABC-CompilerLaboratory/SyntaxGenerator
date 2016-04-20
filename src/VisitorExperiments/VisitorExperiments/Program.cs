@@ -18,8 +18,7 @@ namespace VisitorExperiments
             s.Add(null);
             string program =
 @"
-var 
-  a: integer;
+var a: integer;
 
 procedure f;
 var a: integer;
@@ -28,9 +27,17 @@ begin
   a := 5;
 end;
 
+type
+  Person = class
+  public
+    procedure f;
+      var a: integer;
+    begin
+    end;
+  end;
 begin
   var b, c: integer;
-  write(a);
+  //write(a);
 end.
 ";
             PascalABCNewLanguageParser parser = new PascalABCNewLanguageParser();
