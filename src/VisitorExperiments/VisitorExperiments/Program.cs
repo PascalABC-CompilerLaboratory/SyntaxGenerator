@@ -14,6 +14,44 @@ namespace VisitorExperiments
     {
         static void Main(string[] args)
         {
+            HashSet<string> s = new HashSet<string>();
+            s.Add(null);
+            string program =
+@"
+var 
+  a: integer;
+
+procedure f;
+var a: integer;
+begin
+  var b: integer;
+  a := 5;
+end;
+
+begin
+  var b, c: integer;
+  write(a);
+end.
+";
+            PascalABCNewLanguageParser parser = new PascalABCNewLanguageParser();
+            syntax_tree_node root = parser.BuildTreeInNormalMode("NoName", program);
+
+            Console.WriteLine("Original tree: ");
+            SimplePrettyPrinterVisitor prettyPrinter = new SimplePrettyPrinterVisitor();
+            root.visit(prettyPrinter);
+
+            DeleteUnusedVariables deleteVisitor = new DeleteUnusedVariables();
+            root.visit(deleteVisitor);
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Visitor result: ");
+            root.visit(prettyPrinter);
+
+            Console.ReadKey();
+        }
+
+        static void GroupNodesTest()
+        {
             string program =
             @"procedure A(b: char);
             begin
@@ -50,8 +88,6 @@ namespace VisitorExperiments
 
             SimplePrettyPrinterVisitor prettyPrinter = new SimplePrettyPrinterVisitor();
             root.visit(prettyPrinter);
-
-            Console.ReadKey();
         }
     }
 }
