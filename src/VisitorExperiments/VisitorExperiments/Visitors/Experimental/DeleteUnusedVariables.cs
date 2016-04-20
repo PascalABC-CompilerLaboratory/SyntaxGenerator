@@ -68,7 +68,7 @@ namespace SyntaxVisitors
 
         public override void visit(ident _ident)
         {
-            // if we are here, then _ident 
+            // if we are here, then _ident is a used identifier
             Namespace currentNamespace = CurrentNamespace;
 
             while (currentNamespace != null)
