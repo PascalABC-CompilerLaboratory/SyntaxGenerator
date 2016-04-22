@@ -32,7 +32,7 @@ namespace SyntaxVisitors
             {
                 string variableName = ((st as dot_node).left as ident)?.name;
                 if (variableName != null)
-                    variablesForRemoving[CurrentNamespace].Add(variableName);
+                    variablesForRemoving[CurrentNamespace].Remove(variableName);
 
                 visitNode = false;
             }

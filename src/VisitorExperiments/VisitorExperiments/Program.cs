@@ -37,7 +37,6 @@ type
   end;
 begin
   var b, c: integer;
-  //write(a);
 end.
 ";
             PascalABCNewLanguageParser parser = new PascalABCNewLanguageParser();
