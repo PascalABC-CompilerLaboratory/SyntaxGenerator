@@ -18,6 +18,21 @@ namespace SyntaxVisitors
         }
 
         int varnum = 0;
+        private static HashSet<Type> VisitNodes = new HashSet<Type>(
+        new[] {
+            typeof(procedure_definition),
+            typeof(block),
+            typeof(statement_list),
+            typeof(case_node),
+            typeof(for_node),
+            typeof(foreach_stmt),
+            typeof(if_node),
+            typeof(repeat_node),
+            typeof(while_node),
+            typeof(with_statement),
+            typeof(try_stmt),
+            typeof(lock_stmt)
+            });
 
         public string newVarName()
         {
@@ -33,7 +48,8 @@ namespace SyntaxVisitors
         public override void Enter(syntax_tree_node st)
         {
             base.Enter(st);
-            if (!(st is procedure_definition || st is block || st is statement_list || st is case_node || st is for_node || st is foreach_stmt || st is if_node || st is repeat_node || st is while_node || st is with_statement || st is try_stmt || st is lock_stmt))
+            if (!VisitNodes.Contains(st.GetType()))
+            //if (!(st is procedure_definition || st is block || st is statement_list || st is case_node || st is for_node || st is foreach_stmt || st is if_node || st is repeat_node || st is while_node || st is with_statement || st is try_stmt || st is lock_stmt))
             {
                 visitNode = false;
             }
