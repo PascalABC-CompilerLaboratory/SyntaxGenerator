@@ -76,6 +76,7 @@
     <Compile Include="Visitors\Base\CollectUpperNodesVisitor.cs" />
     <Compile Include="Visitors\Base\FindMainIdentsVisitor.cs" />
     <Compile Include="Visitors\Base\HasStatementVisitor.cs" />
+    <Compile Include="Visitors\Experimental\AssertDeleter.cs" />
     <Compile Include="Visitors\Experimental\CollectNamespaceVisitor.cs" />
     <Compile Include="Visitors\Experimental\DeleteUnusedVariables.cs" />
     <Compile Include="Visitors\Experimental\FindUsedIdents.cs" />

@@ -18,25 +18,10 @@ namespace VisitorExperiments
             s.Add(null);
             string program =
 @"
-var a: integer;
-
-procedure f;
-var a: integer;
 begin
-  var b: integer;
-  a := 5;
-end;
-
-type
-  Person = class
-  public
-    procedure f;
-      var a: integer;
-    begin
-    end;
-  end;
-begin
-  var b, c: integer;
+  write(1);
+  Assert(false);
+  Assert(false, 'asd');
 end.
 ";
             PascalABCNewLanguageParser parser = new PascalABCNewLanguageParser();
@@ -46,7 +31,7 @@ end.
             SimplePrettyPrinterVisitor prettyPrinter = new SimplePrettyPrinterVisitor();
             root.visit(prettyPrinter);
 
-            DeleteUnusedVariables deleteVisitor = new DeleteUnusedVariables();
+            AssertDeleter deleteVisitor = new AssertDeleter();
             root.visit(deleteVisitor);
 
             Console.WriteLine("---------------------");
