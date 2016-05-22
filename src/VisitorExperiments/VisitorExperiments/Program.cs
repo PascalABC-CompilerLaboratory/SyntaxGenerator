@@ -19,24 +19,23 @@ namespace VisitorExperiments
             string program =
 @"
 begin
-  write(1);
-  Assert(false);
-  Assert(false, 'asd');
+  var a: List<integer> = new List<integer>();
+  a.RemoveAll(x -> begin Assert(false); result := false end);
 end.
 ";
             PascalABCNewLanguageParser parser = new PascalABCNewLanguageParser();
             syntax_tree_node root = parser.BuildTreeInNormalMode("NoName", program);
 
-            Console.WriteLine("Original tree: ");
-            SimplePrettyPrinterVisitor prettyPrinter = new SimplePrettyPrinterVisitor();
-            root.visit(prettyPrinter);
+            //Console.WriteLine("Original tree: ");
+            //SimplePrettyPrinterVisitor prettyPrinter = new SimplePrettyPrinterVisitor();
+            //root.visit(prettyPrinter);
 
             AssertDeleter deleteVisitor = new AssertDeleter();
             root.visit(deleteVisitor);
 
             Console.WriteLine("---------------------");
-            Console.WriteLine("Visitor result: ");
-            root.visit(prettyPrinter);
+            //Console.WriteLine("Visitor result: ");
+            //root.visit(prettyPrinter);
 
             Console.ReadKey();
         }

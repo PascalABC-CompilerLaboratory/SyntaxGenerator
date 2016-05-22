@@ -9,8 +9,15 @@ namespace SyntaxVisitors
 {
     public class AssertDeleter : BaseChangeVisitor
     {
+        public override void Enter(syntax_tree_node st)
+        {
+            base.Enter(st);
+        }
+
         public override void visit(procedure_call _procedure_call)
         {
+            base.visit(_procedure_call);
+
             var methodCall = _procedure_call.func_name as method_call;
             if (methodCall != null && 
                 string.Compare(methodCall.SimpleName, "Assert", false) == 0 &&
