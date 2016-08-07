@@ -6,28 +6,31 @@ using System.Threading.Tasks;
 
 namespace TemplateParser
 {
-    public class OptionalParser : Parser
+    public class OptionalParser<T> : Parser
+        where T : Parser
     {
-        private readonly ParserState _originalState;
+        private readonly T _originalParser;
 
-        private bool HadError => _originalState.Mode == ParserMode.Error;
+        protected bool HadError => _originalParser.state.Mode == ParserMode.Error;
 
-        internal OptionalParser(ParserState state) : base(state)
+        protected ParserState OriginalState => _originalParser.state;
+
+        internal OptionalParser(T parser) : base((ParserState)parser.state.Clone())
         {
-            _originalState = (ParserState)state.Clone();
+            _originalParser = parser;
         }
 
         /// <summary>
         /// Возвращает парсер в начальное состояние, если предыдущая попытка парсинга не удалась
         /// </summary>
         /// <returns></returns>
-        public OptionalParser Or()
+        public OptionalParser<T> Or()
         {
             if (Mode == ParserMode.Normal)
                 Mode = ParserMode.IgnoreInstructions;
             else
             if (!HadError && Mode == ParserMode.Error)
-                state = (ParserState)_originalState.Clone();
+                state = (ParserState)OriginalState.Clone();
 
             return this;
         }
@@ -36,12 +39,17 @@ namespace TemplateParser
         /// Завершает работу опционального парсера
         /// </summary>
         /// <returns></returns>
-        public Parser Merge()
+        public T Merge()
         {
-            if (!HadError && Mode == ParserMode.IgnoreInstructions)
-                state.Mode = _originalState.Mode;
+            if (!HadError)
+            {
+                if (Mode == ParserMode.IgnoreInstructions)
+                    Mode = ParserMode.Normal;
 
-            return new Parser(state);
+                _originalParser.state = state;
+            }
+
+            return _originalParser;
         }
 
         //// Переопределение методов для изменения возвращаемого типа

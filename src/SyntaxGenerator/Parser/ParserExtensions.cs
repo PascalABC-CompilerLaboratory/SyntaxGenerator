@@ -30,6 +30,17 @@ namespace TemplateParser.Extensions
         }
 
         /// <summary>
+        /// Считывает символ
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static T ReadChar<T>(this T parser, char c)
+            where T : Parser
+        => parser.ReadChar(ch => ch == c);
+
+        /// <summary>
         /// Считывает символы, пока они удовлетворяют предикату
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -127,5 +138,23 @@ namespace TemplateParser.Extensions
 
             return parser;
         }
+
+        /// <summary>
+        /// Позволяет узнать, завершились ли предыдущие операции успехом
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static T IsSucceed<T>(this T parser, out bool success)
+            where T : Parser
+        {
+            success = parser.IsSucceed;
+            return parser;
+        }
+
+        public static OptionalParser<T> Optional<T>(this T parser)
+            where T : Parser 
+            => new OptionalParser<T>(parser);
     }
 }

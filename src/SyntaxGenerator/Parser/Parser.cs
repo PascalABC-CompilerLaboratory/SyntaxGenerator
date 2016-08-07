@@ -37,7 +37,5 @@ namespace TemplateParser
         {
             this.state = state;
         }
-
-        public OptionalParser Optional() => new OptionalParser((ParserState)state.Clone());
     }
 }

@@ -54,11 +54,16 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParserTests.cs" />
+    <Compile Include="TemplateReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\TemplateParser.csproj">
       <Project>{6e2f3b02-98c9-47fc-8d98-d6c3b4307ee4}</Project>
       <Name>TemplateParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxGenerator\SyntaxGenerator.csproj">
+      <Project>{AF63DCE3-2705-4227-906A-110B6F985147}</Project>
+      <Name>SyntaxGenerator</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

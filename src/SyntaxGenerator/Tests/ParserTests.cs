@@ -17,16 +17,17 @@ namespace Tests
                 var parser = new Parser(input);
                 parser
                     .BeginAccumulation()
-                    .ReadChar(c => c == 'a')
+                    .ReadChar('a')
                     .Optional()
-                        .ReadChar(c => c == 'a')
+                        .ReadChar('a')
                     .Or()
-                        .ReadChar(c => c == 'b')
+                        .ReadChar('b')
                     .Or()
-                        .ReadChar(c => c == 'c')
-                        .Merge()
-                    .ReadChar(c => c == 'c')
+                        .ReadChar('c')
+                    .Merge()
+                    .ReadChar('c')
                     .EndAccumulation(s => Assert.AreEqual(input, s));
+                Assert.IsTrue(parser.IsSucceed);
             }
 
             inputs = new string[] { "a", "ab" };
@@ -41,6 +42,7 @@ namespace Tests
                     .Or()
                         .Merge()
                     .EndAccumulation(s => Assert.AreEqual(input, s));
+                Assert.IsTrue(parser.IsSucceed);
             }
         }
 
@@ -54,31 +56,34 @@ namespace Tests
                 .ReadWhile(c => c == 'a')
                 .ReadChar(c => c == 'b')
                 .EndAccumulation(s => Assert.AreEqual(input, s));
+            Assert.IsTrue(parser.IsSucceed);
         }
 
         [TestMethod]
         public void ReadString()
         {
             var input = "abcd";
-            new Parser(input)
+            var parser = new Parser(input)
                 .BeginAccumulation()
                 .ReadChar(c => c == 'a')
                 .ReadString("bc")
                 .ReadChar(c => c == 'd')
                 .EndAccumulation(s => Assert.AreEqual(input, s));
+            Assert.IsTrue(parser.IsSucceed);
         }
 
         [TestMethod]
         public void ReadUntil()
         {
             var input = "f<>oo<<a>bar<b>>";
-            new Parser(input)
+            var parser = new Parser(input)
                 .ReadUntil("<a>")
                 .BeginAccumulation()
                 .ReadString("<a>")
                 .ReadUntil("<b>")
                 .ReadString("<b>")
                 .EndAccumulation(s => Assert.AreEqual("<a>bar<b>", s));
+            Assert.IsTrue(parser.IsSucceed);
         }
     }
 }

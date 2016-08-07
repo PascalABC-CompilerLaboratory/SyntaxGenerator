@@ -1,23 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SyntaxGenerator.Reading;
 using TemplateParser;
 using TemplateParser.Extensions;
-using SyntaxGenerator.Reading;
+using static TemplateParser.ParserHelper;
 using SyntaxGenerator.TemplateNodes;
-using System.Threading;
 
-namespace ConsoleApplication1
+namespace Tests
 {
-    class Program
+    [TestClass]
+    public class TemplateReaderTests
     {
-        static void Main(string[] args)
+        [TestMethod]
+        public void ReadString()
         {
-            Thread.Sleep(1000);
-
             var input = @"foo""bar{""asd""}\{ \}""42";
 
             var parser = new Parser(input)
