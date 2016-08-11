@@ -47,6 +47,7 @@
     <Compile Include="TemplateNodes\AbstractNode.cs" />
     <Compile Include="TemplateNodes\Expression.cs" />
     <Compile Include="TemplateNodes\FormatString.cs" />
+    <Compile Include="TemplateNodes\Identifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\TemplateParser.csproj">

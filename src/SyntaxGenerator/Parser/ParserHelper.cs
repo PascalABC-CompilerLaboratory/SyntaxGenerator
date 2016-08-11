@@ -8,6 +8,8 @@ namespace TemplateParser
 {
     public class ParserHelper
     {
+        public static bool IsNormalState(Parser parser) => parser.Mode == ParserMode.Normal;
+
         public static Predicate<char> AnyOf(params char[] chars)
         {
             return c => 

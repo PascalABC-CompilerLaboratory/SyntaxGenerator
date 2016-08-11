@@ -13,19 +13,29 @@ namespace SyntaxGenerator.Reading
 {
     static internal class ParserExtensionsForTemplates
     {
-        static internal T ReadIdentifier<T>(this T parser)
+        static internal T ReadIdentifier<T>(this T parser, Action<Identifier> identProcessor)
             where T : Parser
         {
-            return parser.ReadChar(IsLetter).ReadWhile(IsLetterOrDigit);
+            if (IsNormalState(parser))
+                parser = parser
+                    .BeginAccumulation()
+                    .ReadChar(IsLetter)
+                    .ReadWhile(IsLetterOrDigit)
+                    .EndAccumulation(s => identProcessor(new Identifier(s)));
+
+            return parser;
         }
 
         static internal T ReadExpression<T>(this T parser, Action<Expression> expressionProcessor)
             where T : Parser
         {
-            parser
-                .Optional()
-                    .ReadString(s => expressionProcessor(s))
-                .Merge();
+            if (IsNormalState(parser))
+                parser = parser
+                    .Optional()
+                        .ReadString(s => expressionProcessor(s))
+                    .Or()
+                        .ReadIdentifier(id => expressionProcessor(id))
+                    .Merge();
 
             return parser;
         }
@@ -33,6 +43,9 @@ namespace SyntaxGenerator.Reading
         static internal T ReadString<T>(this T parser, Action<FormatString> stringProcessor)
             where T : Parser
         {
+            if (!IsNormalState(parser))
+                return parser;
+
             int argumentCounter = 0;
             StringBuilder format = new StringBuilder();
             var formatString = new FormatString();
