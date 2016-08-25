@@ -84,6 +84,13 @@ namespace Tests
                 .ReadString("<b>")
                 .EndAccumulation(s => Assert.AreEqual("<a>bar<b>", s));
             Assert.IsTrue(parser.IsSucceed);
+
+            input = "foo";
+            parser = new Parser(input)
+                .BeginAccumulation()
+                .ReadUntil("bar")
+                .EndAccumulation(s => Assert.AreEqual(input, s));
+            Assert.IsTrue(parser.IsSucceed);
         }
     }
 }

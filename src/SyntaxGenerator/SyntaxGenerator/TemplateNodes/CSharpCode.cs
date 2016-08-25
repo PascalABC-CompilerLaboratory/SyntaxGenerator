@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public class Identifier : Expression
+    public class CSharpCode : CodePart
     {
-        public string Value { get; set; }
+        public string Code { get; set; }
 
-        public Identifier() { }
+        public CSharpCode() { }
 
-        public Identifier(string value)
+        public CSharpCode(string code)
         {
-            Value = value;
+            Code = code;
         }
     }
 }

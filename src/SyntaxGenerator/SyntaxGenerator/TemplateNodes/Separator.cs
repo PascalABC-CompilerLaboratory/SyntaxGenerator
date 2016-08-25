@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public class Identifier : Expression
+    public class Separator : Parameter
     {
-        public string Value { get; set; }
+        public Expression Value { get; set; }
 
-        public Identifier() { }
+        public Separator() { }
 
-        public Identifier(string value)
+        public Separator(Expression separator)
         {
-            Value = value;
+            Value = separator;
         }
     }
 }

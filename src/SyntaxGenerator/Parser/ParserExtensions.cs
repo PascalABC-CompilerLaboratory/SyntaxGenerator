@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Char;
 
 namespace TemplateParser.Extensions
 {
@@ -77,7 +78,7 @@ namespace TemplateParser.Extensions
         /// после чего удаляет его
         /// </summary>
         /// <param name="processor">Обработчик текста</param>
-        public static T EndAccumulation<T>(this T parser, ProcessDelegate processor)
+        public static T EndAccumulation<T>(this T parser, Action<string> processor)
             where T : Parser
         {
             processor(parser.state.Accumulated);
@@ -92,11 +93,14 @@ namespace TemplateParser.Extensions
         /// <param name="parser"></param>
         /// <param name="string"></param>
         /// <returns></returns>
-        public static T ReadString<T>(this T parser, string @string)
+        public static T ReadString<T>(this T parser, string @string, bool caseSensitive = true)
             where T : Parser
         {
             foreach (char ch in @string)
-                parser.ReadChar(c => c == ch);
+                parser.ReadChar(c => 
+                    caseSensitive ? 
+                    c == ch :
+                    ToUpper(c) == ToUpper(ch));
 
             return parser;
         }
@@ -108,8 +112,9 @@ namespace TemplateParser.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
         /// <param name="string"></param>
+        /// <param name="caseSensitive">Определяет необходимость учета регистра символов строки</param>
         /// <returns></returns>
-        public static T ReadUntil<T>(this T parser, string @string)
+        public static T ReadUntil<T>(this T parser, string @string, bool caseSensitive = true)
             where T : Parser
         {
             ParserState _firstMatchState;
@@ -118,11 +123,15 @@ namespace TemplateParser.Extensions
                 // Доходим до вхождения первого символа
                 parser.ReadWhile(c => c != @string[0]);
 
+                // Если дошли до конца, значит строка не найдена
+                if (parser.AtEnd)
+                    return parser;
+
                 // Копируем состояние
                 _firstMatchState = (ParserState)parser.state.Clone();
 
                 // Если прочли нужную строку - возвращаемся в ее начало и заканчиваем работу метода
-                if (parser.ReadString(@string).IsSucceed)
+                if (parser.ReadString(@string, caseSensitive).IsSucceed)
                 {
                     parser.state = _firstMatchState;
                     return parser;
@@ -156,5 +165,15 @@ namespace TemplateParser.Extensions
         public static OptionalParser<T> Optional<T>(this T parser)
             where T : Parser 
             => new OptionalParser<T>(parser);
+
+        /// <summary>
+        /// Читает пробельные символы, если они представлены
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public static T SkipWhiteSpaces<T>(this T parser)
+            where T : Parser
+            => parser.ReadWhile(IsWhiteSpace);
     }
 }

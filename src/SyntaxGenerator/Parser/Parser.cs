@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace TemplateParser
 {
-    public delegate void ProcessDelegate(string parsed);
-
     public class Parser
     {
         protected internal ParserState state;

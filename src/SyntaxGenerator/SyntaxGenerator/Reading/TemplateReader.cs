@@ -12,10 +12,13 @@ using static TemplateParser.ParserHelper;
 
 namespace SyntaxGenerator.Reading
 {
-    public class TemplateReader
+    public class TemplateReader : IReader
     {
-        private readonly Parser _parser;
-
-        
+        public Template CreateTemplate(string source)
+        {
+            Template template = null;
+            new Parser(source).ReadTemplate(t => template = t);
+            return template;
+        }
     }
 }

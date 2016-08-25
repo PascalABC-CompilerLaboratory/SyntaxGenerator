@@ -71,6 +71,9 @@ namespace TemplateParser
 
         public char Advance()
         {
+            if (Mode == ParserMode.Error)
+                return FullInput[Position];
+
             // This is not good for '\r' new line
             if (Current == '\n')
             {

@@ -41,13 +41,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reading\IReader.cs" />
     <Compile Include="Reading\Lexems.cs" />
     <Compile Include="Reading\TemplateParserExtensions.cs" />
     <Compile Include="Reading\TemplateReader.cs" />
     <Compile Include="TemplateNodes\AbstractNode.cs" />
+    <Compile Include="TemplateNodes\Assignment.cs" />
+    <Compile Include="TemplateNodes\CodePart.cs" />
+    <Compile Include="TemplateNodes\CSharpCode.cs" />
     <Compile Include="TemplateNodes\Expression.cs" />
     <Compile Include="TemplateNodes\FormatString.cs" />
     <Compile Include="TemplateNodes\Identifier.cs" />
+    <Compile Include="TemplateNodes\Parameter.cs" />
+    <Compile Include="TemplateNodes\ParameterizedExpression.cs" />
+    <Compile Include="TemplateNodes\QualifiedIdentifier.cs" />
+    <Compile Include="TemplateNodes\Separator.cs" />
+    <Compile Include="TemplateNodes\SetStatement.cs" />
+    <Compile Include="TemplateNodes\Statement.cs" />
+    <Compile Include="TemplateNodes\Template.cs" />
+    <Compile Include="TemplateNodes\TemplateCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\TemplateParser.csproj">
@@ -55,7 +67,9 @@
       <Name>TemplateParser</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
