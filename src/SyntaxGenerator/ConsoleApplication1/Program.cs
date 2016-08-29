@@ -22,7 +22,7 @@ namespace ConsoleApplication1
 
             var parser = new Parser(input)
                 .ReadWhile(c => c != '"')
-                .ReadString(s =>
+                .ReadInterpolatedString(s =>
                 {
                     Assert.AreEqual("bar{0}{ }", s.Format);
                     Assert.AreEqual("asd", (s.Arguments[0] as FormatString).Format);

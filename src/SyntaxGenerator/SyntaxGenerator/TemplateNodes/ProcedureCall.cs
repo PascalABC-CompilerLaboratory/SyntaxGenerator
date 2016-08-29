@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public class ParameterizedExpression : TemplateCode
+    public class FunctionCall : TemplateCode
     {
-        public Expression Expression { get; set; }
+        public string Name { get; set; }
 
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
-        public ParameterizedExpression() { }
+        public FunctionCall() { }
 
         /// <summary>
         /// Шаблон для генерации кода
         /// </summary>
-        /// <param name="core">Выражение, по которому генерируется код</param>
+        /// <param name="name">Выражение, по которому генерируется код</param>
         /// <param name="parameters">Параметры генерации</param>
-        public ParameterizedExpression(Expression core, List<Parameter> parameters)
+        public FunctionCall(string name, List<Parameter> parameters)
         {
-            Expression = core;
+            Name = name;
             Parameters = parameters;
         }
 

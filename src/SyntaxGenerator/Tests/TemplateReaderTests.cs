@@ -18,7 +18,7 @@ namespace Tests
 
             var parser = new Parser(input)
                 .ReadWhile(c => c != '"')
-                .ReadString(s =>
+                .ReadInterpolatedString(s =>
                 {
                     Assert.AreEqual("bar{0}bar2{1}{ }", s.Format);
                     Assert.AreEqual("a", (s.Arguments[0] as FormatString).Format);
@@ -38,21 +38,6 @@ namespace Tests
                 {
                     Assert.AreEqual("foo", id.Qualifier.Value);
                     Assert.AreEqual("bar", id.Value);
-                });
-
-            Assert.IsTrue(parser.IsSucceed);
-        }
-
-        [TestMethod]
-        public void ReadJoin()
-        {
-            var input = "join \"\n\"";
-            var parser = new Parser(input)
-                .ReadJoinParameter(
-                separator =>
-                {
-                    Assert.IsInstanceOfType(separator.Value, typeof(FormatString));
-                    Assert.AreEqual("\n", (separator.Value as FormatString).Format);
                 });
 
             Assert.IsTrue(parser.IsSucceed);
@@ -93,8 +78,9 @@ namespace Tests
         {
             var input =
 @"<#set FileType = SimpleSyntaxNode#>
-public <#NodeName#>(<#""{ Field.Type } _{ Field.Name }"" join "", ""#>)
+public <#NodeName#>(<#""{ Field.Type } _{ Field.Name }""#>)
 {
+    <#ConstructGen separator ""\n""#>
 }";
             var parser = new Parser(input).ReadTemplate(
                 template =>
@@ -106,23 +92,30 @@ public <#NodeName#>(<#""{ Field.Type } _{ Field.Name }"" join "", ""#>)
 
                     Assert.AreEqual("public ", (parts[1] as CSharpCode).Code);
 
-                    var nodeName = ((parts[2] as ParameterizedExpression).Expression as Identifier).Value;
+                    var nodeName = (parts[2] as Identifier).Value;
                     Assert.AreEqual("NodeName", nodeName);
 
                     Assert.AreEqual("(", (parts[3] as CSharpCode).Code);
 
-                    var core = (parts[4] as ParameterizedExpression).Expression as FormatString;
-                    var parameters = (parts[4] as ParameterizedExpression).Parameters;
-                    Assert.AreEqual("{0} _{1}", core.Format);
-                    var identifier = core.Arguments[0] as QualifiedIdentifier;
+                    var format = (parts[4] as FormatString);
+                    var parameters = (parts[4] as FormatString).Arguments;
+                    Assert.AreEqual("{0} _{1}", format.Format);
+                    var identifier = format.Arguments[0] as QualifiedIdentifier;
                     Assert.AreEqual("Field", identifier.Qualifier.Value);
                     Assert.AreEqual("Type", identifier.Value);
-                    identifier = core.Arguments[1] as QualifiedIdentifier;
+                    identifier = format.Arguments[1] as QualifiedIdentifier;
                     Assert.AreEqual("Field", identifier.Qualifier.Value);
                     Assert.AreEqual("Name", identifier.Value);
-                    Assert.AreEqual(", ", ((parameters[0] as Separator).Value as FormatString).Format);
 
-                    Assert.AreEqual(")\r\n{\r\n}", (parts[5] as CSharpCode).Code);
+                    Assert.AreEqual(")\r\n{\r\n    ", (parts[5] as CSharpCode).Code);
+
+                    var funcCall = parts[6] as FunctionCall;
+                    var firstParam = funcCall.Parameters[0] as Parameter<string>;
+                    Assert.AreEqual("ConstructGen", funcCall.Name);
+                    Assert.AreEqual("separator", firstParam.Name);
+                    Assert.AreEqual(@"\n", firstParam.Value);
+
+                    Assert.AreEqual("\r\n}", (parts[7] as CSharpCode).Code);
                 });
 
             Assert.IsTrue(parser.IsSucceed);

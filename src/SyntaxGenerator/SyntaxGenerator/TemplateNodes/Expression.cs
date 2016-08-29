@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public abstract class Expression : AbstractNode
+    public abstract class Expression : TemplateCode
     {
     }
 }

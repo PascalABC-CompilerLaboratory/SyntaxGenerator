@@ -43,7 +43,7 @@ namespace SyntaxGenerator.Reading
 
             return parser
                     .Optional()
-                        .ReadString(processor)
+                        .ReadInterpolatedString(processor)
                     .Or()
                         .ReadQualifiedIdentifier(processor)
                     .Or()
@@ -56,7 +56,7 @@ namespace SyntaxGenerator.Reading
             => parser.ReadIdentifier((string s) => processor(new Identifier(s)));
 
         /// <summary>
-        /// Читает идентификатор вида &lt;Identifier&gt;.&lt;Identifier&gt;
+        /// Читает идентификатор вида Identifier.Identifier
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
@@ -88,7 +88,7 @@ namespace SyntaxGenerator.Reading
         /// Фигурные скобки экранируются символом '\',
         /// например, "object A \{ get; set; \}".
         /// </remarks>
-        static internal T ReadString<T>(this T parser, Action<FormatString> stringProcessor)
+        static internal T ReadInterpolatedString<T>(this T parser, Action<FormatString> stringProcessor)
             where T : Parser
         {
             if (!IsNormalState(parser))
@@ -168,29 +168,45 @@ namespace SyntaxGenerator.Reading
             if (!IsNormalState(parser))
                 return parser;
 
-            return parser
-                    .Optional()
-                        .ReadJoinParameter(processor)
-                    .Merge();
+            string parameterName = null;
+            Parameter parameter = null;
+            parser
+                .ReadIdentifier(name => parameterName = name)
+                .SkipWhiteSpaces()
+                .ReadString(str => parameter = new Parameter<string>(parameterName, str));
+
+            if (parser.IsSucceed)
+                processor(parameter);
+
+            return parser;
         }
 
         /// <summary>
-        /// Читает 'join &lt;expression&gt;'
+        /// Читает строку
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
-        /// <param name="processor">Обработчик разделителя</param>
+        /// <param name="processor"></param>
         /// <returns></returns>
-        static internal T ReadJoinParameter<T>(this T parser, Action<Separator> processor)
+        static internal T ReadString<T>(this T parser, Action<string> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
                 return parser;
 
-            return parser
-                .ReadString(Lexems.JoinKeyword)
-                .SkipWhiteSpaces()
-                .ReadExpression(expr => processor(new Separator(expr)));
+            // TODO: реализовать экранирование "
+            string content = null;
+            parser
+                .ReadChar('"')
+                .BeginAccumulation()
+                .ReadWhile(c => c != '"')
+                .EndAccumulation(str => content = str)
+                .ReadChar('"');
+
+            if (parser.IsSucceed)
+                processor(content);
+
+            return parser;
         }
 
         #endregion
@@ -209,23 +225,37 @@ namespace SyntaxGenerator.Reading
                 .EndAccumulation(s => processor(new CSharpCode(s)));
         }
 
-        static internal T ReadParametrizedExpression<T>(this T parser, Action<ParameterizedExpression> processor)
+
+        /// <summary>
+        /// Читает вызов функции
+        /// <para/>
+        /// ProcedureName {ParameterName ParameterValue }
+        /// Не менее одного параметра
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
+        static internal T ReadFunctionCall<T>(this T parser, Action<FunctionCall> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
                 return parser;
 
-            var expressionWithParams = new ParameterizedExpression();
+            var functionCall = new FunctionCall();
             parser
-                .ReadExpression(expr => expressionWithParams.Expression = expr)
+                .ReadIdentifier(name => functionCall.Name = name)
+                .SkipWhiteSpaces()
+                .ReadParameter(param => functionCall.AddParameter(param))
                 .SkipWhiteSpaces();
             
+            // Читаем остальные параметры
             while (parser.IsSucceed)
             {
                 // Пытаемся прочесть параметр
                 var optional = parser
                     .Optional()
-                        .ReadParameter(param => expressionWithParams.AddParameter(param))
+                        .ReadParameter(param => functionCall.AddParameter(param))
                         .SkipWhiteSpaces();
 
                 // Если удается, сохраняем позицию и продолжаем работу
@@ -240,11 +270,18 @@ namespace SyntaxGenerator.Reading
             }
 
             if (parser.IsSucceed)
-                processor(expressionWithParams);
+                processor(functionCall);
 
             return parser;
         }
 
+        /// <summary>
+        /// Читает участок кода на языке генерации
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
         static internal T ReadTemplateCode<T>(this T parser, Action<TemplateCode> processor)
             where T : Parser
         {
@@ -255,9 +292,11 @@ namespace SyntaxGenerator.Reading
                 .ReadString(Lexems.TemplateOpenSymbol)
                 .SkipWhiteSpaces()
                 .Optional()
-                    .ReadParametrizedExpression(processor)
+                    .ReadFunctionCall(processor)
                 .Or()
                     .ReadStatement(processor)
+                .Or()
+                    .ReadExpression(processor)
                 .Merge()
                 .SkipWhiteSpaces()
                 .ReadString(Lexems.TemplateCloseSymbol);
@@ -291,7 +330,7 @@ namespace SyntaxGenerator.Reading
         /// <summary>
         /// Читает присваивание 
         /// <para/>
-        /// 'set &lt;VariableName&gt; = &lt;Value&gt;'
+        /// 'set VariableName = Value'
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
@@ -320,7 +359,7 @@ namespace SyntaxGenerator.Reading
         /// <summary>
         /// Читает оператор установки значения зарезервированной переменной
         /// <para/>
-        /// 'set &lt;VariableName&gt; = &lt;Value&gt;'
+        /// 'set VariableName = Value'
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>

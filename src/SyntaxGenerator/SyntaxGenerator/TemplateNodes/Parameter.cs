@@ -6,7 +6,20 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public class Parameter : AbstractNode
-    { 
+    public abstract class Parameter : AbstractNode { }
+
+    public class Parameter<T> : Parameter
+    {
+        public string Name { get; set; }
+
+        public T Value { get; set; }
+
+        public Parameter() { }
+
+        public Parameter(string name, T value)
+        {
+            Name = name;
+            Value = value;
+        }
     }
 }
