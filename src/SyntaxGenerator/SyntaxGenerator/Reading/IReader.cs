@@ -9,6 +9,6 @@ namespace SyntaxGenerator.Reading
 {
     public interface IReader
     {
-        Template CreateTemplate(string source);
+        Template ParseTemplate(string source);
     }
 }

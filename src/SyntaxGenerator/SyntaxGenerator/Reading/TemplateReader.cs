@@ -14,7 +14,7 @@ namespace SyntaxGenerator.Reading
 {
     public class TemplateReader : IReader
     {
-        public Template CreateTemplate(string source)
+        public Template ParseTemplate(string source)
         {
             Template template = null;
             new Parser(source).ReadTemplate(t => template = t);

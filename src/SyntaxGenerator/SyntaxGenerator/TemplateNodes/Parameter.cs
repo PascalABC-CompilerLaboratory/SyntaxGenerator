@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.TemplateNodes
 {
-    public abstract class Parameter : AbstractNode { }
+    /// <summary>
+    /// Параметр функции <see cref="FunctionCall"/>
+    /// </summary>
+    public interface IParameter
+    {
+        string Name { get; set; }
+    }
 
-    public class Parameter<T> : Parameter
+    public class Parameter<T> : IParameter
     {
         public string Name { get; set; }
 

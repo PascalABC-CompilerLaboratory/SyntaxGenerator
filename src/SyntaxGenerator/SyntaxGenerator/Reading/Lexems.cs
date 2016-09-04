@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace SyntaxGenerator.Reading
 {
-    internal class Lexems
+    public class Lexems
     {
-        internal static readonly string TemplateOpenSymbol = "<#";
-        internal static readonly string TemplateCloseSymbol = "#>";
-        internal static readonly string AssignSymbol = "=";
+        public static readonly string TemplateOpenSymbol = "<#";
+        public static readonly string TemplateCloseSymbol = "#>";
+        public static readonly string AssignSymbol = "=";
+        public static readonly string Comma = ",";
+        public static readonly string OpenRoundBracket = "(";
+        public static readonly string CloseRoundBracket = ")";
+        public static readonly string Colon = ":";
 
-        internal static readonly string JoinKeyword = "join";
-        internal static readonly string SetKeyword = "set";
+        public static readonly string SetKeyword = "set";
+        public static readonly string JoinKeyword = "join";
     }
 }

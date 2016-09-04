@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxGenerator", "SyntaxGenerator\SyntaxGenerator.csproj", "{AF63DCE3-2705-4227-906A-110B6F985147}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxConverter", "SyntaxConverter\SyntaxConverter.csproj", "{184EB091-DC74-48AA-80A8-4D0A62DC0FEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OldNodesGenerator", "OldGenerator\OldNodesGenerator.csproj", "{1C27130D-43F9-40F9-A7EF-DED5F6C6C9CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{AF63DCE3-2705-4227-906A-110B6F985147}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF63DCE3-2705-4227-906A-110B6F985147}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF63DCE3-2705-4227-906A-110B6F985147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184EB091-DC74-48AA-80A8-4D0A62DC0FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184EB091-DC74-48AA-80A8-4D0A62DC0FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184EB091-DC74-48AA-80A8-4D0A62DC0FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184EB091-DC74-48AA-80A8-4D0A62DC0FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C27130D-43F9-40F9-A7EF-DED5F6C6C9CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C27130D-43F9-40F9-A7EF-DED5F6C6C9CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C27130D-43F9-40F9-A7EF-DED5F6C6C9CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C27130D-43F9-40F9-A7EF-DED5F6C6C9CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

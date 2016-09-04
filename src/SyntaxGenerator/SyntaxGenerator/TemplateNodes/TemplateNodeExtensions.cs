@@ -1,4 +1,5 @@
-﻿using SyntaxGenerator.Visitors;
+﻿using SyntaxGenerator.CodeGeneration;
+using SyntaxGenerator.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,9 @@ namespace SyntaxGenerator.TemplateNodes
 {
     public static class TemplateNodeExtensions
     {
-        public static void Accept<T>(this T node, IVisitor visitor)
-            where T : AbstractNode
+        public static IEnumerable<string> Evaluate(this IExpression expression, IFunctionTable funcTable)
         {
-            visitor.Visit(node);
+            return expression.Accept(new ExpressionEvaluator(funcTable));
         }
     }
 }

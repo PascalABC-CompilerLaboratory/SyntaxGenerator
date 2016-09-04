@@ -35,45 +35,29 @@ namespace SyntaxGenerator.Reading
         /// <param name="parser"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        static internal T ReadExpression<T>(this T parser, Action<Expression> processor)
+        static internal T ReadExpression<T>(this T parser, Action<IExpression> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
                 return parser;
 
-            return parser
-                    .Optional()
-                        .ReadInterpolatedString(processor)
-                    .Or()
-                        .ReadQualifiedIdentifier(processor)
-                    .Or()
-                        .ReadIdentifier(processor)
-                    .Merge();
+            IExpression expression = null;
+            parser
+                .Optional()
+                    .ReadInterpolatedString(str => expression = str)
+                .Or()
+                    .ReadFunctionCall(funcCall => expression = funcCall)
+                .Merge()
+                .Optional()
+                    .ReadJoinParameter(separator => expression.Separator = separator)
+                .Or().Merge();
+
+            if (parser.IsSucceed)
+                processor(expression);
+
+            return parser;
         }
 
-        static internal T ReadIdentifier<T>(this T parser, Action<Identifier> processor)
-            where T : Parser
-            => parser.ReadIdentifier((string s) => processor(new Identifier(s)));
-
-        /// <summary>
-        /// Читает идентификатор вида Identifier.Identifier
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="parser"></param>
-        /// <param name="processor">Обработчик идентификатора</param>
-        /// <returns></returns>
-        static internal T ReadQualifiedIdentifier<T>(this T parser, Action<QualifiedIdentifier> processor)
-            where T : Parser
-        {
-            if (!IsNormalState(parser))
-                return parser;
-
-            Identifier qualifier = null;
-            return parser
-                .ReadIdentifier(id => qualifier = id)
-                .ReadChar('.')
-                .ReadIdentifier(id => processor(new QualifiedIdentifier(qualifier, id)));
-        }
 
         /// <summary>
         /// Читает строку
@@ -102,19 +86,22 @@ namespace SyntaxGenerator.Reading
             parser.ReadChar('"');
             while (!endOfString && parser.IsSucceed)
             {
-                // Читаем, пока не встретим '{', '}' или конец строки
+                // Читаем, пока не встретим выражение, экранирование или конец строки
                 var optional = parser
                     .BeginAccumulation()
                     .ReadWhile(Not(AnyOf('"', '\\', '{', '}')))
                     .EndAccumulation(part => format.Append(part))
                     .Optional();
 
-                // '\}' переводим в '}', '\{' в '{'
+                // Читаем экранированные символы
                 if (optional.ReadString(@"\{").IsSucceed)
                     format.Append('{');
                 else
                 if (optional.Or().ReadString(@"\}").IsSucceed)
                     format.Append('}');
+                else
+                if (optional.Or().ReadEscapeCharacter(ch => format.Append(ch)).IsSucceed)
+                    ;
                 else
                 // Если это конец строки, то завершаем чтение
                 if (optional.Or().ReadChar('"').IsSucceed)
@@ -122,7 +109,7 @@ namespace SyntaxGenerator.Reading
                 else
                 {
                     // пытаемся прочесть {Expression}
-                    Expression expression = null;
+                    IExpression expression = null;
                     bool isInterpolation = optional
                         .Or()
                         .ReadChar('{')
@@ -151,6 +138,25 @@ namespace SyntaxGenerator.Reading
             return parser;
         }
 
+        /// <summary>
+        /// Читает 'join &lt;string&gt;'
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor">Обработчик разделителя</param>
+        /// <returns></returns>
+        static internal T ReadJoinParameter<T>(this T parser, Action<string> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            return parser
+                .ReadString(Lexems.JoinKeyword)
+                .SkipWhiteSpaces()
+                .ReadString(processor);
+        }
+
         #endregion
 
         #region Parameters
@@ -162,16 +168,18 @@ namespace SyntaxGenerator.Reading
         /// <param name="parser"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        static internal T ReadParameter<T>(this T parser, Action<Parameter> processor)
+        static internal T ReadParameter<T>(this T parser, Action<IParameter> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
                 return parser;
 
             string parameterName = null;
-            Parameter parameter = null;
+            IParameter parameter = null;
             parser
                 .ReadIdentifier(name => parameterName = name)
+                .SkipWhiteSpaces()
+                .ReadString(Lexems.Colon)
                 .SkipWhiteSpaces()
                 .ReadString(str => parameter = new Parameter<string>(parameterName, str));
 
@@ -194,19 +202,51 @@ namespace SyntaxGenerator.Reading
             if (!IsNormalState(parser))
                 return parser;
 
-            // TODO: реализовать экранирование "
-            string content = null;
-            parser
-                .ReadChar('"')
-                .BeginAccumulation()
-                .ReadWhile(c => c != '"')
-                .EndAccumulation(str => content = str)
-                .ReadChar('"');
+            StringBuilder result = new StringBuilder();
+            parser.ReadChar('"');
+            while (parser.IsSucceed)
+            {
+                // Читаем, пока не встретим выражение, экранирование или конец строки
+                var optional = parser
+                    .BeginAccumulation()
+                    .ReadWhile(Not(AnyOf('"', '\\')))
+                    .EndAccumulation(part => result.Append(part))
+                    .Optional();
+
+                // Конец строки
+                if (optional.ReadChar('"').IsSucceed)
+                {
+                    optional.Merge();
+                    break;
+                }
+
+                // Читаем экранированные символы
+                optional.Or().ReadEscapeCharacter(ch => result.Append(ch));
+
+                optional.Merge();
+            }
 
             if (parser.IsSucceed)
-                processor(content);
+                processor(result.ToString());
 
             return parser;
+        }
+
+        static private T ReadEscapeCharacter<T>(this T parser, Action<string> processor)
+            where T : Parser
+        {
+            var optional = parser.Optional();
+
+            if (optional.ReadString(@"\n").IsSucceed)
+                processor(Environment.NewLine);
+            else
+            if (optional.Or().ReadString(@"\t").IsSucceed)
+                processor("\t");
+            else
+            if (optional.Or().ReadString(@"\\").IsSucceed)
+                processor("\\");
+
+            return optional.Merge();
         }
 
         #endregion
@@ -229,8 +269,11 @@ namespace SyntaxGenerator.Reading
         /// <summary>
         /// Читает вызов функции
         /// <para/>
-        /// ProcedureName {ParameterName ParameterValue }
-        /// Не менее одного параметра
+        /// FunctionName(Parameters)
+        /// <para/>
+        /// FunctionName()
+        /// <para/>
+        /// FunctionName
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
@@ -242,12 +285,58 @@ namespace SyntaxGenerator.Reading
             if (!IsNormalState(parser))
                 return parser;
 
+            // Читаем имя функции
             var functionCall = new FunctionCall();
             parser
                 .ReadIdentifier(name => functionCall.Name = name)
-                .SkipWhiteSpaces()
-                .ReadParameter(param => functionCall.AddParameter(param))
                 .SkipWhiteSpaces();
+
+            parser
+                .Optional()
+                    .ReadString(Lexems.OpenRoundBracket)
+                    .SkipWhiteSpaces()
+                    .ReadFunctionParameters(parameters => functionCall.Parameters = parameters)
+                    .SkipWhiteSpaces()
+                    .ReadString(Lexems.CloseRoundBracket)
+                .Or()
+                    .Merge();
+            
+            if (parser.IsSucceed)
+                processor(functionCall);
+
+            return parser;
+        }
+
+        /// <summary>
+        /// Читает параметры функции
+        /// <para/>
+        /// [ParameterName: ParameterValue]{,ParameterName: ParameterValue}
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
+        static internal T ReadFunctionParameters<T>(this T parser, Action<List<IParameter>> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            var parameters = new List<IParameter>();
+
+            // Читаем первый параметр
+            var hasParameter = false;
+            parser
+                .Optional()
+                    .ReadParameter(parameter => parameters.Add(parameter))
+                    .IsSucceed(out hasParameter)
+                .Or()
+                    .Merge();
+
+            // Если параметра нет - выходим
+            if (!hasParameter)
+                return parser;
             
             // Читаем остальные параметры
             while (parser.IsSucceed)
@@ -255,7 +344,9 @@ namespace SyntaxGenerator.Reading
                 // Пытаемся прочесть параметр
                 var optional = parser
                     .Optional()
-                        .ReadParameter(param => functionCall.AddParameter(param))
+                        .ReadString(Lexems.Comma)
+                        .SkipWhiteSpaces()
+                        .ReadParameter(param => parameters.Add(param))
                         .SkipWhiteSpaces();
 
                 // Если удается, сохраняем позицию и продолжаем работу
@@ -270,7 +361,7 @@ namespace SyntaxGenerator.Reading
             }
 
             if (parser.IsSucceed)
-                processor(functionCall);
+                processor(parameters);
 
             return parser;
         }
@@ -282,7 +373,7 @@ namespace SyntaxGenerator.Reading
         /// <param name="parser"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        static internal T ReadTemplateCode<T>(this T parser, Action<TemplateCode> processor)
+        static internal T ReadTemplateCode<T>(this T parser, Action<ITemplateCode> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
@@ -292,8 +383,6 @@ namespace SyntaxGenerator.Reading
                 .ReadString(Lexems.TemplateOpenSymbol)
                 .SkipWhiteSpaces()
                 .Optional()
-                    .ReadFunctionCall(processor)
-                .Or()
                     .ReadStatement(processor)
                 .Or()
                     .ReadExpression(processor)
@@ -313,7 +402,7 @@ namespace SyntaxGenerator.Reading
         /// <param name="parser"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        static internal T ReadStatement<T>(this T parser, Action<Statement> processor)
+        static internal T ReadStatement<T>(this T parser, Action<IStatement> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))

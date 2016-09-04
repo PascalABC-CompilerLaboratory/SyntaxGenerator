@@ -40,27 +40,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGeneration\FunctionTables\SyntaxFunctionTable.cs" />
+    <Compile Include="CodeGeneration\SyntaxInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reading\IReader.cs" />
     <Compile Include="Reading\Lexems.cs" />
     <Compile Include="Reading\TemplateParserExtensions.cs" />
     <Compile Include="Reading\TemplateReader.cs" />
+    <Compile Include="SyntaxNodes\Model\Comment.cs" />
+    <Compile Include="SyntaxNodes\Model\Field.cs" />
+    <Compile Include="SyntaxNodes\Model\SyntaxNode.cs" />
+    <Compile Include="SyntaxNodes\Model\SyntaxTree.cs" />
     <Compile Include="TemplateNodes\AbstractNode.cs" />
     <Compile Include="TemplateNodes\Assignment.cs" />
-    <Compile Include="TemplateNodes\CodePart.cs" />
-    <Compile Include="TemplateNodes\CSharpCode.cs" />
     <Compile Include="TemplateNodes\Expression.cs" />
+    <Compile Include="TemplateNodes\ICodePart.cs" />
+    <Compile Include="TemplateNodes\CSharpCode.cs" />
+    <Compile Include="TemplateNodes\IExpression.cs" />
     <Compile Include="TemplateNodes\FormatString.cs" />
-    <Compile Include="TemplateNodes\Identifier.cs" />
     <Compile Include="TemplateNodes\Parameter.cs" />
-    <Compile Include="TemplateNodes\ProcedureCall.cs" />
-    <Compile Include="TemplateNodes\QualifiedIdentifier.cs" />
+    <Compile Include="TemplateNodes\FunctionCall.cs" />
     <Compile Include="TemplateNodes\SetStatement.cs" />
-    <Compile Include="TemplateNodes\Statement.cs" />
+    <Compile Include="TemplateNodes\IStatement.cs" />
     <Compile Include="TemplateNodes\Template.cs" />
-    <Compile Include="TemplateNodes\TemplateCode.cs" />
+    <Compile Include="TemplateNodes\ITemplateCode.cs" />
     <Compile Include="TemplateNodes\TemplateNodeExtensions.cs" />
-    <Compile Include="Visitors\IVisitor.cs" />
+    <Compile Include="CodeGeneration\Visitors\CodeGenerator.cs" />
+    <Compile Include="CodeGeneration\Visitors\ExpressionEvaluator.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\FunctionParameters.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\IFunctionParameters.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\IFunctionTable.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\FunctionTable.cs" />
+    <Compile Include="VisitorInterfaces\IVisitor.cs" />
+    <Compile Include="VisitorInterfaces\IVisitor`1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\TemplateParser.csproj">
