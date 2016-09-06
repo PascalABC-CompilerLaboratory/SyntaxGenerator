@@ -5,6 +5,7 @@ using TemplateParser;
 using TemplateParser.Extensions;
 using static TemplateParser.ParserHelper;
 using SyntaxGenerator.TemplateNodes;
+using System.Linq;
 
 namespace Tests
 {

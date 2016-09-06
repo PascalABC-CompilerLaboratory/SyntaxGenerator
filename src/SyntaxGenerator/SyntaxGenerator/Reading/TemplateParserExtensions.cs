@@ -379,16 +379,25 @@ namespace SyntaxGenerator.Reading
             if (!IsNormalState(parser))
                 return parser;
 
-            return parser
+            bool statementParsed = false;
+            parser
                 .ReadString(Lexems.TemplateOpenSymbol)
                 .SkipWhiteSpaces()
                 .Optional()
                     .ReadStatement(processor)
+                    .IsSucceed(out statementParsed)
                 .Or()
                     .ReadExpression(processor)
                 .Merge()
                 .SkipWhiteSpaces()
                 .ReadString(Lexems.TemplateCloseSymbol);
+
+            if (statementParsed)
+                parser
+                    .ReadWhile(Not(AnyOf('\r', '\n')))
+                    .ReadNewLine();
+
+            return parser;
         }
 
         #endregion
@@ -486,15 +495,10 @@ namespace SyntaxGenerator.Reading
 
             var template = new Template();
 
-            // Читаем тип файла
             parser
-                .SkipWhiteSpaces()
-                .ReadString(Lexems.TemplateOpenSymbol)
-                .SkipWhiteSpaces()
-                .ReadSetStatement(fileType => template.AddPart(fileType))
-                .SkipWhiteSpaces()
-                .ReadString(Lexems.TemplateCloseSymbol)
-                .SkipWhiteSpaces();
+                .Optional()
+                .ReadTemplateCode(part => template.AddPart(part))
+                .Or().Merge();
                 
             // Разбиваем файл на части кода C# и языка генерации
             while (!parser.AtEnd && parser.IsSucceed)
@@ -509,6 +513,22 @@ namespace SyntaxGenerator.Reading
                 processor(template);
 
             return parser;
+        }
+
+        static internal T ReadNewLine<T>(this T parser)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            return parser
+                .Optional()
+                    .ReadString("\r\n")
+                .Or()
+                    .ReadChar('\r')
+                .Or()
+                    .ReadChar('\n')
+                .Merge();
         }
     }
 }
