@@ -516,7 +516,7 @@ namespace NodeGenerator
 	[Serializable]
 	public class HelpStorage
 	{
-		private Hashtable ht=new Hashtable();
+		public Hashtable ht=new Hashtable();
 
 		public void add_context(object ob,HelpContext hc)
 		{

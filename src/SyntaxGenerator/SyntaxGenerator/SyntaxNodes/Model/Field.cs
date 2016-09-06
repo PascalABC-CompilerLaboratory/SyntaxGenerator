@@ -15,6 +15,8 @@ namespace SyntaxGenerator.SyntaxNodes.Model
         [XmlAttribute]
         public string Type;
 
+        public Field() { }
+
         public Field(string name, string type)
         {
             Name = name;

@@ -13,7 +13,7 @@ namespace SyntaxGenerator.SyntaxNodes.Model
         public string Name;
 
         [XmlAttribute]
-        public string Base;
+        public string BaseName;
 
         [XmlElement]
         public Comment TypeComment;
@@ -21,10 +21,12 @@ namespace SyntaxGenerator.SyntaxNodes.Model
         [XmlElement(ElementName = "Field", Type = typeof(Field))]
         public List<Field> Fields;
 
+        public SyntaxNode() { }
+
         public SyntaxNode(string name, string baseName, IEnumerable<Field> fields = null)
         {
             Name = name;
-            Base = baseName;
+            BaseName = baseName;
             if (fields != null)
                 Fields = new List<Field>(fields);
         }

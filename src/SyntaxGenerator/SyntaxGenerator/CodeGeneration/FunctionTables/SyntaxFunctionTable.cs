@@ -10,16 +10,8 @@ namespace SyntaxGenerator.CodeGeneration
 {
     public class SyntaxFunctionTable : FunctionTable
     {
-        private SyntaxInfo _syntaxInfo;
-
-        private SyntaxNode CurrentNode => _syntaxInfo.CurrentNode;
-
-        private List<SyntaxNode> Nodes => _syntaxInfo.SyntaxTree.Nodes;
-
-        public SyntaxFunctionTable(SyntaxInfo info)
+        public SyntaxFunctionTable()
         {
-            _syntaxInfo = info;
-
             // Здесь задаются имена функций, которые будут использованы в шаблоне
             // и соответствующие им функции
             functions["NodeName"] = NodeName;
@@ -31,33 +23,35 @@ namespace SyntaxGenerator.CodeGeneration
         
         public IEnumerable<string> NodeName(IFunctionParameters parameters)
         { 
-            yield return CurrentNode.Name;
+            yield return node.Name;
         }
 
         public IEnumerable<string> BaseNodeName(IFunctionParameters parameters)
         {
-            yield return CurrentNode.Base;
+            yield return node.Base.Name;
         }
 
         public IEnumerable<string> FieldType(IFunctionParameters parameters)
         {
-            foreach (Field field in CurrentNode.Fields)
+            foreach (Field field in node.Fields)
                 yield return field.Type;
         }
 
         public IEnumerable<string> FieldName(IFunctionParameters parameters)
         {
-            foreach (Field field in CurrentNode.Fields)
+            foreach (Field field in node.Fields)
                 yield return field.Name;
         }
 
         public IEnumerable<string> TypeComment(IFunctionParameters parameters)
         {
-            foreach (XmlElement element in CurrentNode.TypeComment.Body)
+            var indent = parameters.GetValue<int>("indent");
+
+            foreach (XmlElement element in node.TypeComment.Body)
             {
                 string[] lines = element.OuterXml.Split(new string[] { "\r", "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines.Where(l => !string.IsNullOrWhiteSpace(l)))
-                    yield return "/// " + line.TrimStart();
+                    yield return $"{indent}/// {line.TrimStart()}{Environment.NewLine}";
             }
         }
     }

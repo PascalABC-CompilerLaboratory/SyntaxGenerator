@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CodeGeneration\FunctionTables\SyntaxFunctionTable.cs" />
     <Compile Include="CodeGeneration\SyntaxInfo.cs" />
+    <Compile Include="CodeGeneration\SyntaxNodeInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reading\IReader.cs" />
     <Compile Include="Reading\Lexems.cs" />
