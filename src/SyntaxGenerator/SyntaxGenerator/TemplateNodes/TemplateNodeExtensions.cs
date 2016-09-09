@@ -10,9 +10,16 @@ namespace SyntaxGenerator.TemplateNodes
 {
     public static class TemplateNodeExtensions
     {
-        public static IEnumerable<string> Evaluate(this IExpression expression, IFunctionTable funcTable)
+        public static IEvaluatedExpression Evaluate(this IExpression expression, IFunctionTable funcTable)
         {
             return expression.Accept(new ExpressionEvaluator(funcTable));
+        }
+
+        public static bool CheckCondition(this IfStatement statement, IFunctionTable funcTable)
+        {
+            return funcTable.CheckCondition(
+                statement.Condition.Name,
+                new FunctionParameters(statement.Condition.Parameters));
         }
     }
 }

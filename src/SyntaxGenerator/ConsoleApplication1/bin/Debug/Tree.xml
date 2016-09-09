@@ -1,0 +1,768 @@
+<?xml version="1.0"?>
+<SyntaxTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SyntaxNode Name="syntax_tree_node">
+    <Field Name="source_context" Type="SourceContext" />
+  </SyntaxNode>
+  <SyntaxNode Name="expression" BaseName="declaration" />
+  <SyntaxNode Name="statement" BaseName="declaration" />
+  <SyntaxNode Name="statement_list" BaseName="statement">
+    <Field Name="subnodes" Type="List&lt;statement&gt;" />
+    <Field Name="left_logical_bracket" Type="token_info" />
+    <Field Name="right_logical_bracket" Type="token_info" />
+    <Field Name="expr_lambda_body" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="ident" BaseName="addressed_value_funcname">
+    <Field Name="name" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="assign" BaseName="statement">
+    <Field Name="to" Type="addressed_value" />
+    <Field Name="from" Type="expression" />
+    <Field Name="operator_type" Type="Operators" />
+  </SyntaxNode>
+  <SyntaxNode Name="bin_expr" BaseName="addressed_value">
+    <Field Name="left" Type="expression" />
+    <Field Name="right" Type="expression" />
+    <Field Name="operation_type" Type="Operators" />
+  </SyntaxNode>
+  <SyntaxNode Name="un_expr" BaseName="addressed_value">
+    <Field Name="subnode" Type="expression" />
+    <Field Name="operation_type" Type="Operators" />
+  </SyntaxNode>
+  <SyntaxNode Name="const_node" BaseName="addressed_value" />
+  <SyntaxNode Name="bool_const" BaseName="const_node">
+    <Field Name="val" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="int32_const" BaseName="const_node">
+    <Field Name="val" Type="Int32" />
+  </SyntaxNode>
+  <SyntaxNode Name="double_const" BaseName="const_node">
+    <Field Name="val" Type="double" />
+  </SyntaxNode>
+  <SyntaxNode Name="subprogram_body" BaseName="syntax_tree_node">
+    <Field Name="subprogram_code" Type="statement_list" />
+    <Field Name="subprogram_defs" Type="declarations" />
+  </SyntaxNode>
+  <SyntaxNode Name="addressed_value" BaseName="expression" />
+  <SyntaxNode Name="type_definition" BaseName="declaration">
+    <Field Name="attr_list" Type="type_definition_attr_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="roof_dereference" BaseName="dereference" />
+  <SyntaxNode Name="named_type_reference" BaseName="type_definition">
+    <Field Name="names" Type="List&lt;ident&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="variable_definitions" BaseName="declaration">
+    <Field Name="var_definitions" Type="List&lt;var_def_statement&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="ident_list" BaseName="syntax_tree_node">
+    <Field Name="idents" Type="List&lt;ident&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="var_def_statement" BaseName="declaration">
+    <Field Name="vars" Type="ident_list" />
+    <Field Name="vars_type" Type="type_definition" />
+    <Field Name="inital_value" Type="expression" />
+    <Field Name="var_attr" Type="definition_attribute" />
+    <Field Name="is_event" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="declaration" BaseName="syntax_tree_node">
+    <Field Name="attributes" Type="attribute_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="declarations" BaseName="syntax_tree_node">
+    <Field Name="defs" Type="List&lt;declaration&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="program_tree" BaseName="syntax_tree_node">
+    <Field Name="compilation_units" Type="List&lt;compilation_unit&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="program_name" BaseName="syntax_tree_node">
+    <Field Name="prog_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="string_const" BaseName="literal">
+    <Field Name="Value" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="expression_list" BaseName="syntax_tree_node">
+    <Field Name="expressions" Type="List&lt;expression&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="dereference" BaseName="addressed_value_funcname">
+    <Field Name="dereferencing_value" Type="addressed_value" />
+  </SyntaxNode>
+  <SyntaxNode Name="indexer" BaseName="dereference">
+    <Field Name="indexes" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="for_node" BaseName="statement">
+    <Field Name="loop_variable" Type="ident" />
+    <Field Name="initial_value" Type="expression" />
+    <Field Name="finish_value" Type="expression" />
+    <Field Name="statements" Type="statement" />
+    <Field Name="cycle_type" Type="for_cycle_type" />
+    <Field Name="increment_value" Type="expression" />
+    <Field Name="type_name" Type="type_definition" />
+    <Field Name="create_loop_variable" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="repeat_node" BaseName="statement">
+    <Field Name="statements" Type="statement" />
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="while_node" BaseName="statement">
+    <Field Name="expr" Type="expression" />
+    <Field Name="statements" Type="statement" />
+    <Field Name="CycleType" Type="WhileCycleType" />
+  </SyntaxNode>
+  <SyntaxNode Name="if_node" BaseName="statement">
+    <Field Name="condition" Type="expression" />
+    <Field Name="then_body" Type="statement" />
+    <Field Name="else_body" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="ref_type" BaseName="type_definition">
+    <Field Name="pointed_to" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="diapason" BaseName="type_definition">
+    <Field Name="left" Type="expression" />
+    <Field Name="right" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="indexers_types" BaseName="type_definition">
+    <Field Name="indexers" Type="List&lt;type_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="array_type" BaseName="type_definition">
+    <Field Name="indexers" Type="indexers_types" />
+    <Field Name="elements_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="label_definitions" BaseName="declaration">
+    <Field Name="labels" Type="ident_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="procedure_attribute" BaseName="ident">
+    <Field Name="attribute_type" Type="proc_attribute" />
+  </SyntaxNode>
+  <SyntaxNode Name="typed_parameters" BaseName="declaration">
+    <Field Name="idents" Type="ident_list" />
+    <Field Name="vars_type" Type="type_definition" />
+    <Field Name="param_kind" Type="parametr_kind" />
+    <Field Name="inital_value" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="formal_parameters" BaseName="syntax_tree_node">
+    <Field Name="params_list" Type="List&lt;typed_parameters&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="procedure_attributes_list" BaseName="syntax_tree_node">
+    <Field Name="proc_attributes" Type="List&lt;procedure_attribute&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="procedure_header" BaseName="type_definition">
+    <Field Name="parameters" Type="formal_parameters" />
+    <Field Name="proc_attributes" Type="procedure_attributes_list" />
+    <Field Name="name" Type="method_name" />
+    <Field Name="of_object" Type="bool" />
+    <Field Name="class_keyword" Type="bool" />
+    <Field Name="template_args" Type="ident_list" />
+    <Field Name="where_defs" Type="where_definition_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="function_header" BaseName="procedure_header">
+    <Field Name="return_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="procedure_definition" BaseName="declaration">
+    <Field Name="proc_header" Type="procedure_header" />
+    <Field Name="proc_body" Type="proc_block" />
+    <Field Name="is_short_definition" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="type_declaration" BaseName="declaration">
+    <Field Name="type_name" Type="ident" />
+    <Field Name="type_def" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="type_declarations" BaseName="declaration">
+    <Field Name="types_decl" Type="List&lt;type_declaration&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="simple_const_definition" BaseName="const_definition" />
+  <SyntaxNode Name="typed_const_definition" BaseName="const_definition">
+    <Field Name="const_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="const_definition" BaseName="declaration">
+    <Field Name="const_name" Type="ident" />
+    <Field Name="const_value" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="consts_definitions_list" BaseName="declaration">
+    <Field Name="const_defs" Type="List&lt;const_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="unit_name" BaseName="syntax_tree_node">
+    <Field Name="idunit_name" Type="ident" />
+    <Field Name="HeaderKeyword" Type="UnitHeaderKeyword" />
+  </SyntaxNode>
+  <SyntaxNode Name="unit_or_namespace" BaseName="syntax_tree_node">
+    <Field Name="name" Type="ident_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="uses_unit_in" BaseName="unit_or_namespace">
+    <Field Name="in_file" Type="string_const" />
+  </SyntaxNode>
+  <SyntaxNode Name="uses_list" BaseName="syntax_tree_node">
+    <Field Name="units" Type="List&lt;unit_or_namespace&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="program_body" BaseName="syntax_tree_node">
+    <Field Name="used_units" Type="uses_list" />
+    <Field Name="program_definitions" Type="declarations" />
+    <Field Name="program_code" Type="statement_list" />
+    <Field Name="using_list" Type="using_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="compilation_unit" BaseName="syntax_tree_node">
+    <Field Name="file_name" Type="string" />
+    <Field Name="compiler_directives" Type="List&lt;compiler_directive&gt;" />
+    <Field Name="Language" Type="LanguageId" />
+  </SyntaxNode>
+  <SyntaxNode Name="unit_module" BaseName="compilation_unit">
+    <Field Name="unit_name" Type="unit_name" />
+    <Field Name="interface_part" Type="interface_node" />
+    <Field Name="implementation_part" Type="implementation_node" />
+    <Field Name="initialization_part" Type="statement_list" />
+    <Field Name="finalization_part" Type="statement_list" />
+    <Field Name="attributes" Type="attribute_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="program_module" BaseName="compilation_unit">
+    <Field Name="program_name" Type="program_name" />
+    <Field Name="used_units" Type="uses_list" />
+    <Field Name="program_block" Type="block" />
+    <Field Name="using_namespaces" Type="using_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="hex_constant" BaseName="int64_const" />
+  <SyntaxNode Name="get_address" BaseName="addressed_value_funcname">
+    <Field Name="address_of" Type="addressed_value" />
+  </SyntaxNode>
+  <SyntaxNode Name="case_variant" BaseName="statement">
+    <Field Name="conditions" Type="expression_list" />
+    <Field Name="exec_if_true" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="case_node" BaseName="statement">
+    <Field Name="param" Type="expression" />
+    <Field Name="conditions" Type="case_variants" />
+    <Field Name="else_statement" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="method_name" BaseName="syntax_tree_node">
+    <Field Name="ln" Type="List&lt;ident&gt;" />
+    <Field Name="class_name" Type="ident" />
+    <Field Name="meth_name" Type="ident" />
+    <Field Name="explicit_interface_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="dot_node" BaseName="addressed_value_funcname">
+    <Field Name="left" Type="addressed_value" />
+    <Field Name="right" Type="addressed_value" />
+  </SyntaxNode>
+  <SyntaxNode Name="empty_statement" BaseName="statement" />
+  <SyntaxNode Name="goto_statement" BaseName="statement">
+    <Field Name="label" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="labeled_statement" BaseName="statement">
+    <Field Name="label_name" Type="ident" />
+    <Field Name="to_statement" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="with_statement" BaseName="statement">
+    <Field Name="what_do" Type="statement" />
+    <Field Name="do_with" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="method_call" BaseName="dereference">
+    <Field Name="parameters" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="pascal_set_constant" BaseName="addressed_value">
+    <Field Name="values" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="array_const" BaseName="expression">
+    <Field Name="elements" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="write_accessor_name" BaseName="syntax_tree_node">
+    <Field Name="accessor_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="read_accessor_name" BaseName="syntax_tree_node">
+    <Field Name="accessor_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="property_accessors" BaseName="syntax_tree_node">
+    <Field Name="read_accessor" Type="read_accessor_name" />
+    <Field Name="write_accessor" Type="write_accessor_name" />
+  </SyntaxNode>
+  <SyntaxNode Name="simple_property" BaseName="declaration">
+    <Field Name="property_name" Type="ident" />
+    <Field Name="property_type" Type="type_definition" />
+    <Field Name="index_expression" Type="expression" />
+    <Field Name="accessors" Type="property_accessors" />
+    <Field Name="array_default" Type="property_array_default" />
+    <Field Name="parameter_list" Type="property_parameter_list" />
+    <Field Name="attr" Type="definition_attribute" />
+  </SyntaxNode>
+  <SyntaxNode Name="index_property" BaseName="simple_property">
+    <Field Name="property_parametres" Type="formal_parameters" />
+    <Field Name="is_default" Type="default_indexer_property_node" />
+  </SyntaxNode>
+  <SyntaxNode Name="class_members" BaseName="syntax_tree_node">
+    <Field Name="members" Type="List&lt;declaration&gt;" />
+    <Field Name="access_mod" Type="access_modifer_node" />
+  </SyntaxNode>
+  <SyntaxNode Name="access_modifer_node" BaseName="syntax_tree_node">
+    <Field Name="access_level" Type="access_modifer" />
+  </SyntaxNode>
+  <SyntaxNode Name="class_body" BaseName="syntax_tree_node">
+    <Field Name="class_def_blocks" Type="List&lt;class_members&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="class_definition" BaseName="type_definition">
+    <Field Name="class_parents" Type="named_type_reference_list" />
+    <Field Name="body" Type="class_body" />
+    <Field Name="keyword" Type="class_keyword" />
+    <Field Name="template_args" Type="ident_list" />
+    <Field Name="where_section" Type="where_definition_list" />
+    <Field Name="attribute" Type="class_attribute" />
+    <Field Name="is_auto" Type="bool" />
+  </SyntaxNode>
+  <SyntaxNode Name="default_indexer_property_node" BaseName="syntax_tree_node" />
+  <SyntaxNode Name="known_type_definition" BaseName="type_definition">
+    <Field Name="tp" Type="known_type" />
+    <Field Name="unit_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="set_type_definition" BaseName="type_definition">
+    <Field Name="of_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="record_const_definition" BaseName="statement">
+    <Field Name="name" Type="ident" />
+    <Field Name="val" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="record_const" BaseName="expression">
+    <Field Name="rec_consts" Type="List&lt;record_const_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="record_type" BaseName="type_definition">
+    <Field Name="parts" Type="record_type_parts" />
+    <Field Name="base_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="enum_type_definition" BaseName="type_definition">
+    <Field Name="enumerators" Type="enumerator_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="char_const" BaseName="literal">
+    <Field Name="cconst" Type="char" />
+  </SyntaxNode>
+  <SyntaxNode Name="raise_statement" BaseName="statement">
+    <Field Name="excep" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="sharp_char_const" BaseName="literal">
+    <Field Name="char_num" Type="int" />
+  </SyntaxNode>
+  <SyntaxNode Name="literal_const_line" BaseName="literal">
+    <Field Name="literals" Type="List&lt;literal&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="string_num_definition" BaseName="type_definition">
+    <Field Name="num_of_symbols" Type="expression" />
+    <Field Name="name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="variant" BaseName="syntax_tree_node">
+    <Field Name="vars" Type="ident_list" />
+    <Field Name="vars_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="variant_list" BaseName="syntax_tree_node">
+    <Field Name="vars" Type="List&lt;variant&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="variant_type" BaseName="syntax_tree_node">
+    <Field Name="case_exprs" Type="expression_list" />
+    <Field Name="parts" Type="record_type_parts" />
+  </SyntaxNode>
+  <SyntaxNode Name="variant_types" BaseName="syntax_tree_node">
+    <Field Name="vars" Type="List&lt;variant_type&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="variant_record_type" BaseName="syntax_tree_node">
+    <Field Name="var_name" Type="ident" />
+    <Field Name="var_type" Type="type_definition" />
+    <Field Name="vars" Type="variant_types" />
+  </SyntaxNode>
+  <SyntaxNode Name="procedure_call" BaseName="statement">
+    <Field Name="func_name" Type="addressed_value" />
+  </SyntaxNode>
+  <SyntaxNode Name="class_predefinition" BaseName="type_declaration">
+    <Field Name="class_name" Type="ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="nil_const" BaseName="const_node" />
+  <SyntaxNode Name="file_type_definition" BaseName="type_definition">
+    <Field Name="elem_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="constructor" BaseName="procedure_header" />
+  <SyntaxNode Name="destructor" BaseName="procedure_header" />
+  <SyntaxNode Name="inherited_method_call" BaseName="statement">
+    <Field Name="method_name" Type="ident" />
+    <Field Name="exprs" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="typecast_node" BaseName="addressed_value">
+    <Field Name="expr" Type="addressed_value" />
+    <Field Name="type_def" Type="type_definition" />
+    <Field Name="cast_op" Type="op_typecast" />
+  </SyntaxNode>
+  <SyntaxNode Name="interface_node" BaseName="syntax_tree_node">
+    <Field Name="interface_definitions" Type="declarations" />
+    <Field Name="uses_modules" Type="uses_list" />
+    <Field Name="using_namespaces" Type="using_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="implementation_node" BaseName="syntax_tree_node">
+    <Field Name="uses_modules" Type="uses_list" />
+    <Field Name="implementation_definitions" Type="declarations" />
+    <Field Name="using_namespaces" Type="using_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="diap_expr" BaseName="expression">
+    <Field Name="left" Type="expression" />
+    <Field Name="right" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="block" BaseName="proc_block">
+    <Field Name="defs" Type="declarations" />
+    <Field Name="program_code" Type="statement_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="proc_block" BaseName="syntax_tree_node" />
+  <SyntaxNode Name="array_of_named_type_definition" BaseName="type_definition">
+    <Field Name="type_name" Type="named_type_reference" />
+  </SyntaxNode>
+  <SyntaxNode Name="array_of_const_type_definition" BaseName="type_definition" />
+  <SyntaxNode Name="literal" BaseName="const_node" />
+  <SyntaxNode Name="case_variants" BaseName="syntax_tree_node">
+    <Field Name="variants" Type="List&lt;case_variant&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="diapason_expr" BaseName="expression">
+    <Field Name="left" Type="expression" />
+    <Field Name="right" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="var_def_list_for_record" BaseName="syntax_tree_node">
+    <Field Name="vars" Type="List&lt;var_def_statement&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="record_type_parts" BaseName="syntax_tree_node">
+    <Field Name="fixed_part" Type="var_def_list_for_record" />
+    <Field Name="variant_part" Type="variant_record_type" />
+  </SyntaxNode>
+  <SyntaxNode Name="property_array_default" BaseName="syntax_tree_node" />
+  <SyntaxNode Name="property_interface" BaseName="syntax_tree_node">
+    <Field Name="parameter_list" Type="property_parameter_list" />
+    <Field Name="property_type" Type="type_definition" />
+    <Field Name="index_expression" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="property_parameter" BaseName="syntax_tree_node">
+    <Field Name="names" Type="ident_list" />
+    <Field Name="type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="property_parameter_list" BaseName="syntax_tree_node">
+    <Field Name="parameters" Type="List&lt;property_parameter&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="inherited_ident" BaseName="ident" />
+  <SyntaxNode Name="format_expr" BaseName="expression">
+    <Field Name="expr" Type="expression" />
+    <Field Name="format1" Type="expression" />
+    <Field Name="format2" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="initfinal_part" BaseName="syntax_tree_node">
+    <Field Name="initialization_sect" Type="statement_list" />
+    <Field Name="finalization_sect" Type="statement_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="token_info" BaseName="syntax_tree_node">
+    <Field Name="text" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="raise_stmt" BaseName="statement">
+    <Field Name="expr" Type="expression" />
+    <Field Name="address" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="op_type_node" BaseName="token_info">
+    <Field Name="type" Type="Operators" />
+  </SyntaxNode>
+  <SyntaxNode Name="file_type" BaseName="type_definition">
+    <Field Name="file_of_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="known_type_ident" BaseName="ident">
+    <Field Name="type" Type="known_type" />
+  </SyntaxNode>
+  <SyntaxNode Name="exception_handler" BaseName="syntax_tree_node">
+    <Field Name="variable" Type="ident" />
+    <Field Name="type_name" Type="named_type_reference" />
+    <Field Name="statements" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="exception_ident" BaseName="syntax_tree_node">
+    <Field Name="variable" Type="ident" />
+    <Field Name="type_name" Type="named_type_reference" />
+  </SyntaxNode>
+  <SyntaxNode Name="exception_handler_list" BaseName="syntax_tree_node">
+    <Field Name="handlers" Type="List&lt;exception_handler&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="exception_block" BaseName="syntax_tree_node">
+    <Field Name="stmt_list" Type="statement_list" />
+    <Field Name="handlers" Type="exception_handler_list" />
+    <Field Name="else_stmt_list" Type="statement_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="try_handler" BaseName="syntax_tree_node" />
+  <SyntaxNode Name="try_handler_finally" BaseName="try_handler">
+    <Field Name="stmt_list" Type="statement_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="try_handler_except" BaseName="try_handler">
+    <Field Name="except_block" Type="exception_block" />
+  </SyntaxNode>
+  <SyntaxNode Name="try_stmt" BaseName="statement">
+    <Field Name="stmt_list" Type="statement_list" />
+    <Field Name="handler" Type="try_handler" />
+  </SyntaxNode>
+  <SyntaxNode Name="inherited_message" BaseName="statement" />
+  <SyntaxNode Name="external_directive" BaseName="proc_block">
+    <Field Name="modulename" Type="expression" />
+    <Field Name="name" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="using_list" BaseName="syntax_tree_node">
+    <Field Name="namespaces" Type="List&lt;unit_or_namespace&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="jump_stmt" BaseName="statement">
+    <Field Name="expr" Type="expression" />
+    <Field Name="JumpType" Type="JumpStmtType" />
+  </SyntaxNode>
+  <SyntaxNode Name="loop_stmt" BaseName="statement">
+    <Field Name="stmt" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="foreach_stmt" BaseName="statement">
+    <Field Name="identifier" Type="ident" />
+    <Field Name="type_name" Type="type_definition" />
+    <Field Name="in_what" Type="expression" />
+    <Field Name="stmt" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="addressed_value_funcname" BaseName="addressed_value" />
+  <SyntaxNode Name="named_type_reference_list" BaseName="syntax_tree_node">
+    <Field Name="types" Type="List&lt;named_type_reference&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="template_param_list" BaseName="dereference">
+    <Field Name="params_list" Type="List&lt;type_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="template_type_reference" BaseName="named_type_reference">
+    <Field Name="name" Type="named_type_reference" />
+    <Field Name="params_list" Type="template_param_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="int64_const" BaseName="const_node">
+    <Field Name="val" Type="Int64" />
+  </SyntaxNode>
+  <SyntaxNode Name="uint64_const" BaseName="const_node">
+    <Field Name="val" Type="UInt64" />
+  </SyntaxNode>
+  <SyntaxNode Name="new_expr" BaseName="addressed_value">
+    <Field Name="type" Type="type_definition" />
+    <Field Name="params_list" Type="expression_list" />
+    <Field Name="new_array" Type="bool" />
+    <Field Name="array_init_expr" Type="array_const" />
+  </SyntaxNode>
+  <SyntaxNode Name="where_type_specificator_list" BaseName="syntax_tree_node">
+    <Field Name="defs" Type="List&lt;type_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="where_definition" BaseName="syntax_tree_node">
+    <Field Name="names" Type="ident_list" />
+    <Field Name="types" Type="where_type_specificator_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="where_definition_list" BaseName="syntax_tree_node">
+    <Field Name="defs" Type="List&lt;where_definition&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="sizeof_operator" BaseName="addressed_value">
+    <Field Name="type_def" Type="type_definition" />
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="typeof_operator" BaseName="addressed_value">
+    <Field Name="type_name" Type="named_type_reference" />
+  </SyntaxNode>
+  <SyntaxNode Name="compiler_directive" BaseName="syntax_tree_node">
+    <Field Name="Name" Type="token_info" />
+    <Field Name="Directive" Type="token_info" />
+  </SyntaxNode>
+  <SyntaxNode Name="operator_name_ident" BaseName="ident">
+    <Field Name="operator_type" Type="Operators" />
+  </SyntaxNode>
+  <SyntaxNode Name="var_statement" BaseName="statement">
+    <Field Name="var_def" Type="var_def_statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="question_colon_expression" BaseName="addressed_value">
+    <Field Name="condition" Type="expression" />
+    <Field Name="ret_if_true" Type="expression" />
+    <Field Name="ret_if_false" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="expression_as_statement" BaseName="statement">
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="c_scalar_type" BaseName="type_definition">
+    <Field Name="scalar_name" Type="c_scalar_type_name" />
+    <Field Name="sign" Type="c_scalar_sign" />
+  </SyntaxNode>
+  <SyntaxNode Name="c_module" BaseName="compilation_unit">
+    <Field Name="defs" Type="declarations" />
+    <Field Name="used_units" Type="uses_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="declarations_as_statement" BaseName="statement">
+    <Field Name="defs" Type="declarations" />
+  </SyntaxNode>
+  <SyntaxNode Name="array_size" BaseName="type_definition">
+    <Field Name="max_value" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="enumerator" BaseName="syntax_tree_node">
+    <Field Name="name" Type="type_definition" />
+    <Field Name="value" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="enumerator_list" BaseName="syntax_tree_node">
+    <Field Name="enumerators" Type="List&lt;enumerator&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="c_for_cycle" BaseName="statement">
+    <Field Name="expr1" Type="statement" />
+    <Field Name="expr2" Type="expression" />
+    <Field Name="expr3" Type="expression" />
+    <Field Name="stmt" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="switch_stmt" BaseName="statement">
+    <Field Name="condition" Type="expression" />
+    <Field Name="stmt" Type="statement" />
+    <Field Name="Part" Type="SwitchPartType" />
+  </SyntaxNode>
+  <SyntaxNode Name="type_definition_attr_list" BaseName="syntax_tree_node">
+    <Field Name="attributes" Type="List&lt;type_definition_attr&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="type_definition_attr" BaseName="type_definition">
+    <Field Name="attr" Type="definition_attribute" />
+  </SyntaxNode>
+  <SyntaxNode Name="lock_stmt" BaseName="statement">
+    <Field Name="lock_object" Type="expression" />
+    <Field Name="stmt" Type="statement" />
+  </SyntaxNode>
+  <SyntaxNode Name="compiler_directive_list" BaseName="compiler_directive">
+    <Field Name="directives" Type="List&lt;compiler_directive&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="compiler_directive_if" BaseName="compiler_directive">
+    <Field Name="if_part" Type="compiler_directive" />
+    <Field Name="elseif_part" Type="compiler_directive" />
+  </SyntaxNode>
+  <SyntaxNode Name="documentation_comment_list" BaseName="syntax_tree_node">
+    <Field Name="sections" Type="List&lt;documentation_comment_section&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="documentation_comment_tag" BaseName="syntax_tree_node">
+    <Field Name="name" Type="string" />
+    <Field Name="parameters" Type="List&lt;documentation_comment_tag_param&gt;" />
+    <Field Name="text" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="documentation_comment_tag_param" BaseName="syntax_tree_node">
+    <Field Name="name" Type="string" />
+    <Field Name="value" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="documentation_comment_section" BaseName="syntax_tree_node">
+    <Field Name="tags" Type="List&lt;documentation_comment_tag&gt;" />
+    <Field Name="text" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="token_taginfo" BaseName="token_info">
+    <Field Name="tag" Type="object" />
+  </SyntaxNode>
+  <SyntaxNode Name="declaration_specificator" BaseName="type_definition">
+    <Field Name="specificator" Type="DeclarationSpecificator" />
+    <Field Name="name" Type="string" />
+  </SyntaxNode>
+  <SyntaxNode Name="ident_with_templateparams" BaseName="addressed_value_funcname">
+    <Field Name="name" Type="addressed_value" />
+    <Field Name="template_params" Type="template_param_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="template_type_name" BaseName="ident">
+    <Field Name="template_args" Type="ident_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="default_operator" BaseName="addressed_value">
+    <Field Name="type_name" Type="named_type_reference" />
+  </SyntaxNode>
+  <SyntaxNode Name="bracket_expr" BaseName="addressed_value">
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="attribute" BaseName="syntax_tree_node">
+    <Field Name="qualifier" Type="ident" />
+    <Field Name="type" Type="named_type_reference" />
+    <Field Name="arguments" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="simple_attribute_list" BaseName="syntax_tree_node">
+    <Field Name="attributes" Type="List&lt;attribute&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="attribute_list" BaseName="syntax_tree_node">
+    <Field Name="attributes" Type="List&lt;simple_attribute_list&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="function_lambda_definition" BaseName="expression">
+    <Field Name="ident_list" Type="ident_list" />
+    <Field Name="return_type" Type="type_definition" />
+    <Field Name="formal_parameters" Type="formal_parameters" />
+    <Field Name="proc_body" Type="statement" />
+    <Field Name="proc_definition" Type="procedure_definition" />
+    <Field Name="parameters" Type="expression_list" />
+    <Field Name="lambda_name" Type="string" />
+    <Field Name="defs" Type="List&lt;declaration&gt;" />
+    <Field Name="lambda_visit_mode" Type="LambdaVisitMode" />
+    <Field Name="substituting_node" Type="syntax_tree_node" />
+    <Field Name="usedkeyword" Type="int" />
+  </SyntaxNode>
+  <SyntaxNode Name="function_lambda_call" BaseName="expression">
+    <Field Name="f_lambda_def" Type="function_lambda_definition" />
+    <Field Name="parameters" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="semantic_check" BaseName="statement">
+    <Field Name="CheckName" Type="string" />
+    <Field Name="param" Type="List&lt;syntax_tree_node&gt;" />
+    <Field Name="fictive" Type="int" />
+  </SyntaxNode>
+  <SyntaxNode Name="lambda_inferred_type" BaseName="type_definition">
+    <Field Name="real_type" Type="object" />
+  </SyntaxNode>
+  <SyntaxNode Name="same_type_node" BaseName="type_definition">
+    <Field Name="ex" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="name_assign_expr" BaseName="syntax_tree_node">
+    <Field Name="name" Type="ident" />
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="name_assign_expr_list" BaseName="syntax_tree_node">
+    <Field Name="name_expr" Type="List&lt;name_assign_expr&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="unnamed_type_object" BaseName="expression">
+    <Field Name="ne_list" Type="name_assign_expr_list" />
+    <Field Name="is_class" Type="bool" />
+    <Field Name="new_ex" Type="new_expr" />
+  </SyntaxNode>
+  <SyntaxNode Name="semantic_type_node" BaseName="type_definition">
+    <Field Name="type" Type="Object" />
+  </SyntaxNode>
+  <SyntaxNode Name="short_func_definition" BaseName="procedure_definition">
+    <Field Name="procdef" Type="procedure_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="no_type_foreach" BaseName="type_definition" />
+  <SyntaxNode Name="matching_expression" BaseName="addressed_value">
+    <Field Name="left" Type="expression" />
+    <Field Name="right" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="closure_substituting_node" BaseName="ident">
+    <Field Name="substitution" Type="dot_node" />
+  </SyntaxNode>
+  <SyntaxNode Name="sequence_type" BaseName="type_definition">
+    <Field Name="elements_type" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="modern_proc_type" BaseName="type_definition">
+    <Field Name="aloneparam" Type="type_definition" />
+    <Field Name="el" Type="enumerator_list" />
+    <Field Name="res" Type="type_definition" />
+  </SyntaxNode>
+  <SyntaxNode Name="yield_node" BaseName="statement">
+    <Field Name="ex" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="template_operator_name" BaseName="template_type_name">
+    <Field Name="opname" Type="operator_name_ident" />
+  </SyntaxNode>
+  <SyntaxNode Name="semantic_addr_value" BaseName="addressed_value">
+    <Field Name="expr" Type="Object" />
+  </SyntaxNode>
+  <SyntaxNode Name="pair_type_stlist" BaseName="syntax_tree_node">
+    <Field Name="tn" Type="type_definition" />
+    <Field Name="exprs" Type="statement_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="assign_tuple" BaseName="statement">
+    <Field Name="vars" Type="addressed_value_list" />
+    <Field Name="expr" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="addressed_value_list" BaseName="syntax_tree_node">
+    <Field Name="variables" Type="List&lt;addressed_value&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="tuple_node_for_formatter" BaseName="expression">
+    <Field Name="el" Type="expression_list" />
+  </SyntaxNode>
+  <SyntaxNode Name="uses_closure" BaseName="uses_list">
+    <Field Name="listunitsections" Type="List&lt;uses_list&gt;" />
+  </SyntaxNode>
+  <SyntaxNode Name="dot_question_node" BaseName="addressed_value_funcname">
+    <Field Name="left" Type="addressed_value" />
+    <Field Name="right" Type="addressed_value" />
+  </SyntaxNode>
+  <SyntaxNode Name="slice_expr" BaseName="dereference">
+    <Field Name="v" Type="addressed_value" />
+    <Field Name="from" Type="expression" />
+    <Field Name="to" Type="expression" />
+    <Field Name="step" Type="expression" />
+  </SyntaxNode>
+  <SyntaxNode Name="no_type" BaseName="type_definition" />
+  <SyntaxNode Name="yield_unknown_ident" BaseName="ident" />
+  <SyntaxNode Name="yield_unknown_expression_type" BaseName="type_definition" />
+  <SyntaxNode Name="yield_unknown_foreach_type" BaseName="type_definition" />
+  <SyntaxNode Name="yield_sequence_node" BaseName="statement">
+    <Field Name="ex" Type="expression" />
+  </SyntaxNode>
+</SyntaxTree>

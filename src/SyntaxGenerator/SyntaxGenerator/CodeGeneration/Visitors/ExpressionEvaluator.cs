@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SyntaxGenerator.TemplateNodes;
 using SyntaxGenerator.Visitors;
+using System.Text.RegularExpressions;
 
 namespace SyntaxGenerator.CodeGeneration
 {
-    public class ExpressionEvaluator : IVisitor<IEnumerable<string>>
+    public class ExpressionEvaluator : IVisitor<IEvaluatedExpression>
     {
         /// <summary>
         /// Значения выражений
@@ -20,7 +21,26 @@ namespace SyntaxGenerator.CodeGeneration
             this.functionTable = funcTable;
         }
 
-        public IEnumerable<string> Visit(FormatString formatString)
+        public IEvaluatedExpression VisitAssignment(Assignment assignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEvaluatedExpression VisitCSharpCode(CSharpCode code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEvaluatedExpression VisitFormatString(FormatString formatString)
+        {
+            IEnumerable<string> values = VisitFormatStringImpl(formatString);
+
+            return new TextExpression(formatString.Separator == null ?
+                    values :
+                    Enumerable.Repeat(string.Join(formatString.Separator, values), 1));
+        }
+
+        public IEnumerable<string> VisitFormatStringImpl(FormatString formatString)
         {
             if (formatString.Arguments.Count == 0)
             {
@@ -28,20 +48,20 @@ namespace SyntaxGenerator.CodeGeneration
                 yield break;
             }
 
+            /*
             // Списки аргументов, по каждому из списков будет построена строка
             // и добавлена в результат
             List<List<string>> argumentsList = new List<List<string>>();
 
             var evaluator = new ExpressionEvaluator(functionTable);
-            formatString.Arguments[0].Accept(evaluator);
 
             // Количество строк в результате, минимальное из всех представленных
             int resultCount = 0;
             // Обрабатываем список первых аргументов
-            foreach (string firstArg in formatString.Arguments[0].Accept(evaluator))
+            foreach (string firstArg in formatString.Arguments[0].Accept(evaluator).Values)
             {
                 argumentsList.Add(new List<string>());
-                argumentsList[0].Add(firstArg);
+                argumentsList.Last().Add(firstArg);
                 resultCount++;
             }
 
@@ -49,48 +69,80 @@ namespace SyntaxGenerator.CodeGeneration
             for (int argNum = 1; argNum < formatString.Arguments.Count; ++argNum)
             {
                 evaluator = new ExpressionEvaluator(functionTable);
-                formatString.Arguments[argNum].Accept(evaluator);
 
                 var argCount = 0;
-                foreach (string arg in formatString.Arguments[argNum].Accept(evaluator))
+                foreach (string arg in formatString.Arguments[argNum].Accept(evaluator).Values)
                 {
                     // Если количество превышает текущее минимальное, прекращаем добавление аргументов
                     if (++argCount > resultCount)
                         break;
-                    argumentsList[argNum].Add(arg);
+                    argumentsList[argCount - 1].Add(arg);
                 }
                 // Обновляем минимальное количество
                 resultCount = argCount;
             }
 
             // Возвращаем строки с подставленными значениями
+            if (resultCount == 0)
+                yield break;
+
             for (int i = 0; i < resultCount; ++i)
-                yield return string.Format(formatString.Format, argumentsList[i]);
+                yield return string.Format(formatString.Format, argumentsList[i].ToArray());
+            */
+
+            List<IEnumerator<string>> argumentsList = new List<IEnumerator<string>>();
+            var evaluator = new ExpressionEvaluator(functionTable);
+
+            for (int i = 0; i < formatString.Arguments.Count; i++)
+            {
+                argumentsList.Add((formatString.Arguments[i].Accept(evaluator) as TextExpression).Values.GetEnumerator());
+                if (!argumentsList.Last().MoveNext())
+                    yield break;
+            }
+
+            bool lastResult = false;
+            while (!lastResult)
+            {
+                 yield return 
+                    Regex.Replace(formatString.Format, @"{\d+}",
+                    match =>
+                    {
+                        var ind = int.Parse(string.Concat(match.Value.Skip(1).TakeWhile(char.IsDigit)));
+                        var elem = argumentsList[ind].Current;
+                        if (argumentsList[ind].MoveNext() == false)
+                            lastResult = true;
+                        return elem; 
+                    })
+                    .Replace("{{", "{")
+                    .Replace("}}", "}");
+            }
         }
 
-        public IEnumerable<string> Visit(CSharpCode code)
+        public IEvaluatedExpression VisitFunctionCall(FunctionCall funcCall)
+        {
+            if (functionTable.FunctionNames.Contains(funcCall.Name))
+            {
+                var result = functionTable.CallFunction(funcCall.Name, new FunctionParameters(funcCall.Parameters));
+                return new TextExpression(funcCall.Separator == null ?
+                    result :
+                    Enumerable.Repeat(string.Join(funcCall.Separator, result), 1));
+            }
+            else
+                return new
+                    ConditionExpression(functionTable.CheckCondition(funcCall.Name, new FunctionParameters(funcCall.Parameters)));
+        }
+
+        public IEvaluatedExpression VisitIfStatement(IfStatement ifStatement)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> Visit(FunctionCall funcCall)
-        {
-            return functionTable.CallFunction(
-                funcCall.Name,
-                new FunctionParameters(funcCall.Parameters));
-        }
-
-        public IEnumerable<string> Visit(SetStatement setStatement)
+        public IEvaluatedExpression VisitSetStatement(SetStatement setStatement)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> Visit(Template template)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<string> Visit(Assignment assignment)
+        public IEvaluatedExpression VisitTemplate(Template template)
         {
             throw new NotImplementedException();
         }

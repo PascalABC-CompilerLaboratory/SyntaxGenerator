@@ -55,7 +55,7 @@ namespace TemplateParser.Extensions
                 return parser;
 
             // Считываем символы пока они удовлетворяют предикату или пока не достигнут конец
-            if (predicate(parser.CurrentChar))
+            if (!parser.AtEnd && predicate(parser.CurrentChar))
                 while (!parser.state.IsEnd && predicate(parser.Advance())) { }
 
             return parser;
@@ -106,22 +106,28 @@ namespace TemplateParser.Extensions
         }
 
         /// <summary>
-        /// Считывает символы вплоть до вхождения переданной строки. 
+        /// Считывает символы вплоть до вхождения одной из переданных строк. 
         /// Если строки нет - парсер доходит до конца
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="parser"></param>
-        /// <param name="string"></param>
+        /// <param name="strings"></param>
         /// <param name="caseSensitive">Определяет необходимость учета регистра символов строки</param>
         /// <returns></returns>
-        public static T ReadUntil<T>(this T parser, string @string, bool caseSensitive = true)
+        public static T ReadUntil<T>(this T parser, IEnumerable<string> strings, bool caseSensitive = true)
             where T : Parser
         {
+            string possibleMatch = null;
+
             ParserState _firstMatchState;
             do
-            {
+            { 
                 // Доходим до вхождения первого символа
-                parser.ReadWhile(c => c != @string[0]);
+                parser.ReadWhile(c =>
+                {
+                    possibleMatch = strings.FirstOrDefault(str => str[0] == c);
+                    return possibleMatch == null;
+                });
 
                 // Если дошли до конца, значит строка не найдена
                 if (parser.AtEnd)
@@ -131,7 +137,7 @@ namespace TemplateParser.Extensions
                 _firstMatchState = (ParserState)parser.state.Clone();
 
                 // Если прочли нужную строку - возвращаемся в ее начало и заканчиваем работу метода
-                if (parser.ReadString(@string, caseSensitive).IsSucceed)
+                if (parser.ReadString(possibleMatch, caseSensitive).IsSucceed)
                 {
                     parser.state = _firstMatchState;
                     return parser;
@@ -140,7 +146,8 @@ namespace TemplateParser.Extensions
                 {
                     // продолжаем работу со следующего после первого совпадения символа
                     parser.state = _firstMatchState;
-                    parser.ReadChar(c => c == @string[0]);
+                    parser.ReadChar(c => c == possibleMatch[0]);
+                    possibleMatch = null;
                 }
             } while (!parser.AtEnd); // Повторяем пока не дойдем до конца строки
 

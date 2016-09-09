@@ -19,21 +19,26 @@ namespace SyntaxGenerator.TemplateNodes
 
         public Template() { }
 
-        public Template(List<ICodePart> parts)
+        public Template(IEnumerable<ICodePart> parts)
         {
-            Parts = parts;
+            Parts = new List<ICodePart>(parts);
         }
+
+        public string Type =>
+            ((Parts?
+            .Find(part => (part is SetStatement) && (part as SetStatement).VariableName == "TemplateType")
+            as SetStatement).Value as FormatString).Format;
 
         public void AddPart(ICodePart part) => Parts.Add(part);
 
         public void Accept(IVisitor visitor)
         {
-            visitor.Visit(this);
+            visitor.VisitTemplate(this);
         }
 
         public T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitTemplate(this);
         }
     }
 }

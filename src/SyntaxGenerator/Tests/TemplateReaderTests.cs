@@ -15,13 +15,13 @@ namespace Tests
         [TestMethod]
         public void ReadInterpolatedString()
         {
-            var input = @"foo""bar{""a""}bar2{b25}\{ \}""42";
+            var input = @"foo""bar{""a""}bar2{b25}{{ }}""42";
 
             var parser = new Parser(input)
                 .ReadWhile(c => c != '"')
                 .ReadInterpolatedString(s =>
                 {
-                    Assert.AreEqual("bar{0}bar2{1}{ }", s.Format);
+                    Assert.AreEqual("bar{0}bar2{1}{{ }}", s.Format);
                     Assert.AreEqual("a", (s.Arguments[0] as FormatString).Format);
                     Assert.AreEqual("b25", (s.Arguments[1] as FunctionCall).Name);
                 })
@@ -39,6 +39,18 @@ namespace Tests
                 {
                     Assert.AreEqual("name", assignment.VariableName);
                     Assert.AreEqual("foo", (assignment.Value as FunctionCall).Name);
+                    Assert.AreEqual(Environment.NewLine, assignment.Value.Separator);
+                });
+
+            Assert.IsTrue(parser.IsSucceed);
+
+            input = @"name = ""foo"" join ""\n""";
+            parser = new Parser(input)
+                .ReadAssignment(
+                assignment =>
+                {
+                    Assert.AreEqual("name", assignment.VariableName);
+                    Assert.AreEqual("foo", (assignment.Value as FormatString).Format);
                     Assert.AreEqual(Environment.NewLine, assignment.Value.Separator);
                 });
 
@@ -61,6 +73,37 @@ namespace Tests
         }
 
         [TestMethod]
+        public void ReadInteger()
+        {
+            var input = "123";
+            var parser = new Parser(input)
+                .ReadNumber(
+                num =>
+                {
+                    Assert.AreEqual(123, num);
+                });
+
+            Assert.IsTrue(parser.IsSucceed);
+        }
+
+        [TestMethod]
+        public void ReadIfStatement()
+        {
+            var input = "if foo foo1<#bar#>";
+            var parser = new Parser(input)
+                .ReadIfStatement(
+                ifStatement =>
+                {
+                    Assert.AreEqual("foo", ifStatement.Condition.Name);
+                    var parts = ifStatement.Body;
+                    Assert.AreEqual(" foo1", (parts[0] as CSharpCode).Code);
+                    Assert.AreEqual("bar", (parts[1] as FunctionCall).Name);
+                });
+
+            Assert.IsTrue(parser.IsSucceed);
+        }
+
+        [TestMethod]
         public void ReadTemplate()
         {
             var input =
@@ -77,7 +120,7 @@ public <#NodeName#>(<#""{ FieldType() } _{ FieldName( ) }""#>)
                     Assert.AreEqual("FileType", settings.VariableName);
                     Assert.AreEqual("SimpleSyntaxNode", (settings.Value as FunctionCall).Name);
 
-                    Assert.AreEqual("public ", (parts[1] as CSharpCode).Code);
+                    Assert.AreEqual(Environment.NewLine + "public ", (parts[1] as CSharpCode).Code);
 
                     var nodeName = (parts[2] as FunctionCall).Name;
                     Assert.AreEqual("NodeName", nodeName);

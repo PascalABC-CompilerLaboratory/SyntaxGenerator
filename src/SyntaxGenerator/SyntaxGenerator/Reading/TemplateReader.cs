@@ -1,6 +1,9 @@
-﻿using SyntaxGenerator.TemplateNodes;
+﻿using SyntaxGenerator.CodeGeneration;
+using SyntaxGenerator.CodeGeneration.Visitors;
+using SyntaxGenerator.TemplateNodes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,13 +15,25 @@ using static TemplateParser.ParserHelper;
 
 namespace SyntaxGenerator.Reading
 {
-    public class TemplateReader : IReader
+    public class TemplateReader : ITemplateReader
     {
         public Template ParseTemplate(string source)
         {
             Template template = null;
-            new Parser(source).ReadTemplate(t => template = t);
-            return template;
+            var parser = new Parser(source).ReadTemplate(t => template = t);
+            return TemplateCleaner.Visit(template);
+        }
+
+        public TemplateStorage ReadTemplates(IEnumerable<string> templateSources)
+        {
+            TemplateStorage templateStorage = new TemplateStorage();
+            
+            foreach (Template template in templateSources.Select(s => ParseTemplate(s)))
+            {
+                templateStorage.AddTemplate(template.Type, template);
+            }
+
+            return templateStorage;
         }
     }
 }

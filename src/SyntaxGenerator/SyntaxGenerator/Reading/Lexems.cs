@@ -18,5 +18,8 @@ namespace SyntaxGenerator.Reading
 
         public static readonly string SetKeyword = "set";
         public static readonly string JoinKeyword = "join";
+        public static readonly string IfKeyword = "if";
+        public static readonly string TrueKeyword = "true";
+        public static readonly string FalseKeyword = "false";
     }
 }

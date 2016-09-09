@@ -9,16 +9,18 @@ namespace SyntaxGenerator.Visitors
 {
     public interface IVisitor
     {
-        void Visit(Assignment assignment);
+        void VisitAssignment(Assignment assignment);
 
-        void Visit(CSharpCode code);
+        void VisitCSharpCode(CSharpCode code);
 
-        void Visit(FormatString formatString);
+        void VisitFormatString(FormatString formatString);
 
-        void Visit(FunctionCall funcCall);
+        void VisitFunctionalCall(FunctionCall funcCall);
 
-        void Visit(SetStatement setStatement);
+        void VisitSetStatement(SetStatement setStatement);
 
-        void Visit(Template template);
+        void VisitTemplate(Template template);
+
+        void VisitIfStatement(IfStatement ifStatement);
     }
 }

@@ -13,9 +13,9 @@ namespace SyntaxGenerator.TemplateNodes
 
         public List<IExpression> Arguments { get; set; } = new List<IExpression>();
 
-        public FormatString() : base("") { }
+        public FormatString() : base(null) { }
 
-        public FormatString(string format, IEnumerable<IExpression> args, string separator = "") :
+        public FormatString(string format, IEnumerable<IExpression> args, string separator = null) :
             base(separator)
         {
             Format = format;
@@ -24,12 +24,12 @@ namespace SyntaxGenerator.TemplateNodes
 
         public override void Accept(IVisitor visitor)
         {
-            visitor.Visit(this);
+            visitor.VisitFormatString(this);
         }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitFormatString(this);
         }
     }
 }

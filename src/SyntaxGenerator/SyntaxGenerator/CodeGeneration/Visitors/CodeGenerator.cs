@@ -14,48 +14,108 @@ namespace SyntaxGenerator.CodeGeneration
         /// Значения выражений
         /// </summary>
         protected IFunctionTable functionTable;
-
+        
         /// <summary>
-        /// Сохраненные выражения
+        /// Вычисленные aliased-выражения
         /// </summary>
-        protected Dictionary<string, IExpression> expressionAliases;
+        protected Dictionary<string, IEvaluatedExpression> cachedExpressions =
+            new Dictionary<string, IEvaluatedExpression>();
 
         /// <summary>
         /// Аккумулятор результата
         /// </summary>
-        protected StringBuilder generatedCode;
-        
-        public void Visit(FormatString formatString)
+        protected StringBuilder generatedCode = new StringBuilder();
+
+        /// <summary>
+        /// Хранит отступ для выражений
+        /// </summary>
+        protected string currentIndent;
+
+        public CodeGenerator(IFunctionTable funcTable)
         {
-            var str = string.Join(formatString.Separator, formatString.Evaluate(functionTable));
-            generatedCode.Append(str);
+            functionTable = funcTable;
         }
 
-        public void Visit(FunctionCall funcCall)
+        public string GetCode()
         {
-            var str = string.Join(funcCall.Separator, funcCall.Evaluate(functionTable));
-            generatedCode.Append(str);
+            var code = generatedCode.ToString();
+
+            var lines = code.Lines();
+            List<string> result = new List<string>();
+            var ignoreWhitespace = false;
+            foreach (var line in lines)
+                if (!ignoreWhitespace)
+                {
+                    result.Add(line);
+                    if (line.All(char.IsWhiteSpace))
+                        ignoreWhitespace = true;
+                }
+                else
+                {
+                    if (!line.All(char.IsWhiteSpace))
+                    {
+                        result.Add(line);
+                        ignoreWhitespace = false;
+                    }
+                }
+            return string.Join(Environment.NewLine, result);
         }
 
-        public void Visit(SetStatement setStatement)
+        public void VisitFormatString(FormatString formatString)
+        {
+            var str = string.Join(formatString.Separator, (formatString.Evaluate(functionTable) as TextExpression).Values);
+            var result = str.AddIndent(currentIndent);
+
+            generatedCode.Append(result);
+        }
+
+        public void VisitFunctionalCall(FunctionCall funcCall)
+        {
+            var funcResult = functionTable.CallFunction(funcCall.Name, new FunctionParameters(funcCall.Parameters));
+            var result = string.Join(funcCall.Separator, funcResult).AddIndent(currentIndent);
+
+            generatedCode.Append(result);
+        }
+
+        public void VisitSetStatement(SetStatement setStatement)
         {
             
         }
 
-        public void Visit(Template template)
+        public void VisitTemplate(Template template)
         {
             foreach (var codePart in template.Parts)
                 codePart.Accept(this);
         }
 
-        public void Visit(Assignment assignment)
+        public void VisitAssignment(Assignment assignment)
         {
-            expressionAliases[assignment.VariableName] = assignment.Value;
+            cachedExpressions[assignment.VariableName] = assignment.Value.Evaluate(functionTable);
+            functionTable.AddExpressionAlias(assignment.VariableName, assignment.Value);
         }
 
-        public void Visit(CSharpCode csharpCode)
+        public void VisitCSharpCode(CSharpCode csharpCode)
         {
-            generatedCode.Append(csharpCode.Code);
+            currentIndent = csharpCode.Indent;
+            string code = csharpCode.Code;
+            code = code.Substring(0, code.Length - currentIndent.Length);
+            //if (emptyExpressionReturned)
+            //{
+            //    var firstLine = string.Concat(code.TakeWhile(c => c != '\r' && c != '\n'));
+            //    code = firstLine + Environment.NewLine + string.Concat(code.SkipWhile(char.IsWhiteSpace));
+            //}
+
+            if (code == "")
+                return;
+
+            generatedCode.Append(code);
+        }
+
+        public void VisitIfStatement(IfStatement ifStatement)
+        {
+            if (ifStatement.CheckCondition(functionTable))
+                foreach (ICodePart part in ifStatement.Body)
+                    part.Accept(this);
         }
     }
 }

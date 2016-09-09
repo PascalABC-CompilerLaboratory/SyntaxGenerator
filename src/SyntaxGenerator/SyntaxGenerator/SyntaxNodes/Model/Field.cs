@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static System.Char;
 
 namespace SyntaxGenerator.SyntaxNodes.Model
 {
@@ -14,6 +15,12 @@ namespace SyntaxGenerator.SyntaxNodes.Model
 
         [XmlAttribute]
         public string Type;
+
+        public bool IsList => Type.StartsWith("List<");
+
+        public string ListType => IsList ? 
+            string.Concat(Type.Skip(5).TakeWhile(c => c != '>')) : 
+            "";
 
         public Field() { }
 

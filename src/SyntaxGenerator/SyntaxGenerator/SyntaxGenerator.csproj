@@ -40,14 +40,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGeneration\FunctionTables\ConditionExpression.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\IEvaluatedExpression.cs" />
     <Compile Include="CodeGeneration\FunctionTables\SyntaxFunctionTable.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\SyntaxTreeFileFunctionTable.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\TextExpression.cs" />
+    <Compile Include="CodeGeneration\StringExtensions.cs" />
+    <Compile Include="CodeGeneration\SyntaxTreeGenerator.cs" />
     <Compile Include="CodeGeneration\SyntaxInfo.cs" />
     <Compile Include="CodeGeneration\SyntaxNodeInfo.cs" />
+    <Compile Include="CodeGeneration\TableStorage.cs" />
+    <Compile Include="CodeGeneration\TemplateStorage.cs" />
+    <Compile Include="CodeGeneration\Visitors\TemplateCleaner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reading\IReader.cs" />
+    <Compile Include="Reading\ITemplateReader.cs" />
     <Compile Include="Reading\Lexems.cs" />
     <Compile Include="Reading\TemplateParserExtensions.cs" />
     <Compile Include="Reading\TemplateReader.cs" />
+    <Compile Include="Reading\TemplateStorageBuilder.cs" />
     <Compile Include="SyntaxNodes\Model\Comment.cs" />
     <Compile Include="SyntaxNodes\Model\Field.cs" />
     <Compile Include="SyntaxNodes\Model\SyntaxNode.cs" />
@@ -59,6 +69,7 @@
     <Compile Include="TemplateNodes\CSharpCode.cs" />
     <Compile Include="TemplateNodes\IExpression.cs" />
     <Compile Include="TemplateNodes\FormatString.cs" />
+    <Compile Include="TemplateNodes\IfStatement.cs" />
     <Compile Include="TemplateNodes\Parameter.cs" />
     <Compile Include="TemplateNodes\FunctionCall.cs" />
     <Compile Include="TemplateNodes\SetStatement.cs" />
@@ -71,7 +82,7 @@
     <Compile Include="CodeGeneration\FunctionTables\FunctionParameters.cs" />
     <Compile Include="CodeGeneration\FunctionTables\IFunctionParameters.cs" />
     <Compile Include="CodeGeneration\FunctionTables\IFunctionTable.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\FunctionTable.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\AbstractSyntaxFunctionTable.cs" />
     <Compile Include="VisitorInterfaces\IVisitor.cs" />
     <Compile Include="VisitorInterfaces\IVisitor`1.cs" />
   </ItemGroup>

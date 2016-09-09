@@ -49,6 +49,7 @@ namespace SyntaxGenerator.Reading
                     .ReadFunctionCall(funcCall => expression = funcCall)
                 .Merge()
                 .Optional()
+                    .SkipWhiteSpaces()
                     .ReadJoinParameter(separator => expression.Separator = separator)
                 .Or().Merge();
 
@@ -94,11 +95,11 @@ namespace SyntaxGenerator.Reading
                     .Optional();
 
                 // Читаем экранированные символы
-                if (optional.ReadString(@"\{").IsSucceed)
-                    format.Append('{');
+                if (optional.ReadString("{{").IsSucceed)
+                    format.Append("{{");
                 else
-                if (optional.Or().ReadString(@"\}").IsSucceed)
-                    format.Append('}');
+                if (optional.Or().ReadString("}}").IsSucceed)
+                    format.Append("}}");
                 else
                 if (optional.Or().ReadEscapeCharacter(ch => format.Append(ch)).IsSucceed)
                     ;
@@ -181,7 +182,13 @@ namespace SyntaxGenerator.Reading
                 .SkipWhiteSpaces()
                 .ReadString(Lexems.Colon)
                 .SkipWhiteSpaces()
-                .ReadString(str => parameter = new Parameter<string>(parameterName, str));
+                .Optional()
+                    .ReadString(str => parameter = new Parameter<string>(parameterName, str))
+                .Or()
+                    .ReadBoolean(boolVal => parameter = new Parameter<bool>(parameterName, boolVal))
+                .Or()
+                    .ReadNumber(num => parameter = new Parameter<int>(parameterName, num))
+                .Merge();
 
             if (parser.IsSucceed)
                 processor(parameter);
@@ -232,6 +239,50 @@ namespace SyntaxGenerator.Reading
             return parser;
         }
 
+        /// <summary>
+        /// Читает true или false
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
+        static internal T ReadBoolean<T>(this T parser, Action<bool> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            var optional = parser.Optional();
+            if (optional.ReadString(Lexems.TrueKeyword).IsSucceed)
+                processor(true);
+            else
+            if (optional.Or().ReadString(Lexems.FalseKeyword).IsSucceed)
+                processor(false);
+
+            return optional.Merge();
+        }
+
+        /// <summary>
+        /// Читает целое число
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
+        static internal T ReadNumber<T>(this T parser, Action<int> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            var isSucceed = false;
+            return parser
+                .BeginAccumulation()
+                .ReadWhile(IsDigit)
+                .IsSucceed(out isSucceed)
+                .EndAccumulation(num => { if (isSucceed) processor(int.Parse(num)); });
+        }
+
         static private T ReadEscapeCharacter<T>(this T parser, Action<string> processor)
             where T : Parser
         {
@@ -253,7 +304,7 @@ namespace SyntaxGenerator.Reading
 
         #region CodeParts
 
-        static internal T ReadCSharpCode<T>(this T parser, Action<CSharpCode> processor)
+        static internal T ReadCSharpCode<T>(this T parser, IEnumerable<string> endSymbols, Action<CSharpCode> processor)
             where T : Parser
         {
             if (!IsNormalState(parser))
@@ -261,7 +312,7 @@ namespace SyntaxGenerator.Reading
 
             return parser
                 .BeginAccumulation()
-                .ReadUntil(Lexems.TemplateOpenSymbol)
+                .ReadUntil(endSymbols)
                 .EndAccumulation(s => processor(new CSharpCode(s)));
         }
 
@@ -288,8 +339,7 @@ namespace SyntaxGenerator.Reading
             // Читаем имя функции
             var functionCall = new FunctionCall();
             parser
-                .ReadIdentifier(name => functionCall.Name = name)
-                .SkipWhiteSpaces();
+                .ReadIdentifier(name => functionCall.Name = name);
 
             parser
                 .Optional()
@@ -378,24 +428,17 @@ namespace SyntaxGenerator.Reading
         {
             if (!IsNormalState(parser))
                 return parser;
-
-            bool statementParsed = false;
+            
             parser
                 .ReadString(Lexems.TemplateOpenSymbol)
                 .SkipWhiteSpaces()
                 .Optional()
                     .ReadStatement(processor)
-                    .IsSucceed(out statementParsed)
                 .Or()
                     .ReadExpression(processor)
                 .Merge()
                 .SkipWhiteSpaces()
                 .ReadString(Lexems.TemplateCloseSymbol);
-
-            if (statementParsed)
-                parser
-                    .ReadWhile(Not(AnyOf('\r', '\n')))
-                    .ReadNewLine();
 
             return parser;
         }
@@ -422,6 +465,8 @@ namespace SyntaxGenerator.Reading
                         .ReadAssignment(processor)
                     .Or()
                         .ReadSetStatement(processor)
+                    .Or()
+                        .ReadIfStatement(processor)
                     .Merge();
         }
 
@@ -485,7 +530,99 @@ namespace SyntaxGenerator.Reading
             return parser;
         }
 
+        /// <summary>
+        /// Читает условный оператор
+        /// <para/>
+        /// 'if FunctionCall Template'
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="processor"></param>
+        /// <returns></returns>
+        static internal T ReadIfStatement<T>(this T parser, Action<IfStatement> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            var ifStatement = new IfStatement();
+            parser
+                .ReadString(Lexems.IfKeyword)
+                .SkipWhiteSpaces()
+                .ReadFunctionCall(funcCall => ifStatement.Condition = funcCall)
+                .ReadIfBody(parts => ifStatement.Body.AddRange(parts));
+
+            if (parser.IsSucceed)
+                processor(ifStatement);
+
+            return parser;
+        }
+
         #endregion
+
+        static internal T ReadIfBody<T>(this T parser, Action<IEnumerable<ICodePart>> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            List<ICodePart> parts = new List<ICodePart>();
+            parser
+                .Optional()
+                .ReadTemplateCode(part => parts.Add(part))
+                .Or().Merge();
+
+            // Разбиваем файл на части кода C# и языка генерации
+            while (!parser.AtEnd && parser.IsSucceed)
+            {
+                parser.ReadCSharpCode(new string[] { Lexems.TemplateOpenSymbol, Lexems.TemplateCloseSymbol }, part => parts.Add(part));
+
+                // Проверяем, не закончилось ли тело if
+                var optional = parser.Optional();
+                if (optional.ReadString(Lexems.TemplateCloseSymbol).IsSucceed)
+                {
+                    if (parser.IsSucceed)
+                        processor(parts);
+
+                    return optional.Reset();
+                }
+
+                if (!parser.AtEnd)
+                    parser.ReadTemplateCode(part => parts.Add(part));
+            }
+
+            if (parser.IsSucceed)
+                processor(parts);
+
+            return parser;
+        }
+
+        static internal T ReadCodeParts<T>(this T parser, Action<IEnumerable<ICodePart>> processor)
+            where T : Parser
+        {
+            if (!IsNormalState(parser))
+                return parser;
+
+            List<ICodePart> parts = new List<ICodePart>();
+            parser
+                .Optional()
+                .ReadTemplateCode(part => parts.Add(part))
+                .Or().Merge();
+
+            // Разбиваем файл на части кода C# и языка генерации
+            while (!parser.AtEnd && parser.IsSucceed)
+            {
+                parser.ReadCSharpCode(new string[] { Lexems.TemplateOpenSymbol }, part => parts.Add(part));
+
+                if (!parser.AtEnd)
+                    parser.ReadTemplateCode(part => parts.Add(part));
+            }
+
+            if (parser.IsSucceed)
+                processor(parts);
+
+            return parser;
+        }
 
         static internal T ReadTemplate<T>(this T parser, Action<Template> processor)
             where T : Parser
@@ -493,26 +630,8 @@ namespace SyntaxGenerator.Reading
             if (!IsNormalState(parser))
                 return parser;
 
-            var template = new Template();
-
-            parser
-                .Optional()
-                .ReadTemplateCode(part => template.AddPart(part))
-                .Or().Merge();
-                
-            // Разбиваем файл на части кода C# и языка генерации
-            while (!parser.AtEnd && parser.IsSucceed)
-            {
-                parser.ReadCSharpCode(part => template.AddPart(part));
-
-                if (!parser.AtEnd)
-                    parser.ReadTemplateCode(part => template.AddPart(part));
-            }
-
-            if (parser.IsSucceed)
-                processor(template);
-
-            return parser;
+            return parser
+                .ReadCodeParts(parts => processor(new Template(parts)));
         }
 
         static internal T ReadNewLine<T>(this T parser)

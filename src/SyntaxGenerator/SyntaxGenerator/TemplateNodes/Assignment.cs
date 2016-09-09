@@ -23,12 +23,12 @@ namespace SyntaxGenerator.TemplateNodes
 
         public void Accept(IVisitor visitor)
         {
-            visitor.Visit(this);
+            visitor.VisitAssignment(this);
         }
 
         public T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitAssignment(this);
         }
     }
 }

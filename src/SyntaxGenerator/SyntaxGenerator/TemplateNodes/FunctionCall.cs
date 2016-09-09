@@ -13,14 +13,14 @@ namespace SyntaxGenerator.TemplateNodes
 
         public List<IParameter> Parameters { get; set; } = new List<IParameter>();
 
-        public FunctionCall() : base(separator: "") { }
+        public FunctionCall() : base(separator: null) { }
 
         /// <summary>
         /// Шаблон для генерации кода
         /// </summary>
         /// <param name="name">Выражение, по которому генерируется код</param>
         /// <param name="parameters">Параметры генерации</param>
-        public FunctionCall(string name, List<IParameter> parameters, string separator = "") :
+        public FunctionCall(string name, List<IParameter> parameters, string separator = null) :
             base(separator)
         {
             Name = name;
@@ -31,12 +31,12 @@ namespace SyntaxGenerator.TemplateNodes
 
         public override void Accept(IVisitor visitor)
         {
-            visitor.Visit(this);
+            visitor.VisitFunctionalCall(this);
         }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.Visit(this);
+            return visitor.VisitFunctionCall(this);
         }
     }
 }

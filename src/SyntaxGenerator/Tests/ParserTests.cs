@@ -77,10 +77,10 @@ namespace Tests
         {
             var input = "f<>oo<<a>bar<b>>";
             var parser = new Parser(input)
-                .ReadUntil("<a>")
+                .ReadUntil(new string[] { "<a>" })
                 .BeginAccumulation()
                 .ReadString("<a>")
-                .ReadUntil("<b>")
+                .ReadUntil(new string[] { "<b>" })
                 .ReadString("<b>")
                 .EndAccumulation(s => Assert.AreEqual("<a>bar<b>", s));
             Assert.IsTrue(parser.IsSucceed);
@@ -88,7 +88,7 @@ namespace Tests
             input = "foo";
             parser = new Parser(input)
                 .BeginAccumulation()
-                .ReadUntil("bar")
+                .ReadUntil(new string[] { "bar" })
                 .EndAccumulation(s => Assert.AreEqual(input, s));
             Assert.IsTrue(parser.IsSucceed);
         }

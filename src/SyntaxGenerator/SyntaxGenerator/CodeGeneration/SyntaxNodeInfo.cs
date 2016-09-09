@@ -76,5 +76,58 @@ namespace SyntaxGenerator.CodeGeneration
                 node = node._baseNodeInfo;
             }
         }
+
+        ///// <summary>
+        ///// Возвращает поля, не являющиеся списками
+        ///// </summary>
+        ///// <param name="includeParents">Включить в результат поля родительских узлов</param>
+        ///// <param name="syntaxOnly">Только синтаксические узлы</param>
+        ///// <returns></returns>
+        //public IEnumerable<Field> SimpleFields(bool includeParents = true, bool syntaxOnly = false)
+        //{
+        //    return GetFields(includeParents)
+        //        .Where(
+        //        field => !field.IsList 
+        //        && syntaxOnly ?
+        //           _syntaxInfo.HasSyntaxNode(field.Type) :
+        //           true);
+        //}
+
+        ///// <summary>
+        ///// Возвращает поля, являющиеся списками
+        ///// </summary>
+        ///// <param name="includeParents">Включить в результат поля родительских узлов</param>
+        ///// <param name="syntaxOnly">Только синтаксические узлы</param>
+        ///// <returns></returns>
+        //public IEnumerable<Field> ListFields(bool includeParents = true, bool syntaxOnly = false)
+        //{
+        //    return GetFields(includeParents)
+        //        .Where(
+        //        field => field.IsList
+        //        && syntaxOnly ?
+        //           _syntaxInfo.HasSyntaxNode(field.Type) :
+        //           true);
+        //}
+
+        ///// <summary>
+        ///// Возвращает поля, являющиеся списками
+        ///// </summary>
+        ///// <param name="syntaxOnly">Только синтаксические узлы</param>
+        ///// <returns></returns>
+        //public IEnumerable<Field> AllFields(bool syntaxOnly = false)
+        //{
+        //    if (syntaxOnly)
+        //        return GetFields(includeParents: true).Where(field => _syntaxInfo.HasSyntaxNode(field.Type));
+        //    else
+        //        return GetFields(includeParents: true);
+        //}
+
+        public IEnumerable<Field> GetFields(bool includeParents, Predicate<SyntaxNode> nodeFilter, Predicate<Field> fieldFilter) => 
+            includeParents ?
+            GetInheritanceChain(fromRootToSelf: true, includeSelf: true)
+            .Where(node => nodeFilter(node))
+            .SelectMany(node => node.Fields)
+            .Where(field => fieldFilter(field)) :
+            Fields.Where(field => fieldFilter(field));
     }
 }

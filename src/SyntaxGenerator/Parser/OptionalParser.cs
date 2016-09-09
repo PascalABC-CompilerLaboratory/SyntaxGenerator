@@ -36,7 +36,7 @@ namespace TemplateParser
         }
 
         /// <summary>
-        /// Завершает работу опционального парсера
+        /// Завершает работу опционального парсера, выбирая первое удачное состояние
         /// </summary>
         /// <returns></returns>
         public T Merge()
@@ -49,6 +49,15 @@ namespace TemplateParser
                 _originalParser.state = state;
             }
 
+            return _originalParser;
+        }
+
+        /// <summary>
+        /// Завершает работу опционального парсера, возвращаясь к начальному состоянию
+        /// </summary>
+        /// <returns></returns>
+        public T Reset()
+        {
             return _originalParser;
         }
 
