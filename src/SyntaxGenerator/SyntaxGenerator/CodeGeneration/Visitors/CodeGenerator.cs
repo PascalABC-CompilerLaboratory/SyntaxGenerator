@@ -14,12 +14,6 @@ namespace SyntaxGenerator.CodeGeneration
         /// Значения выражений
         /// </summary>
         protected IFunctionTable functionTable;
-        
-        /// <summary>
-        /// Вычисленные aliased-выражения
-        /// </summary>
-        protected Dictionary<string, IEvaluatedExpression> cachedExpressions =
-            new Dictionary<string, IEvaluatedExpression>();
 
         /// <summary>
         /// Аккумулятор результата
@@ -90,7 +84,6 @@ namespace SyntaxGenerator.CodeGeneration
 
         public void VisitAssignment(Assignment assignment)
         {
-            cachedExpressions[assignment.VariableName] = assignment.Value.Evaluate(functionTable);
             functionTable.AddExpressionAlias(assignment.VariableName, assignment.Value);
         }
 
@@ -99,15 +92,6 @@ namespace SyntaxGenerator.CodeGeneration
             currentIndent = csharpCode.Indent;
             string code = csharpCode.Code;
             code = code.Substring(0, code.Length - currentIndent.Length);
-            //if (emptyExpressionReturned)
-            //{
-            //    var firstLine = string.Concat(code.TakeWhile(c => c != '\r' && c != '\n'));
-            //    code = firstLine + Environment.NewLine + string.Concat(code.SkipWhile(char.IsWhiteSpace));
-            //}
-
-            if (code == "")
-                return;
-
             generatedCode.Append(code);
         }
 

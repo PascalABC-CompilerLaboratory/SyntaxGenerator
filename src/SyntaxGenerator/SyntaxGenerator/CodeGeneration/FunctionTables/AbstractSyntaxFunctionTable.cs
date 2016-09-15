@@ -29,6 +29,8 @@ namespace SyntaxGenerator.CodeGeneration
         private Dictionary<string, IEvaluatedExpression> _cachedExpressions =
             new Dictionary<string, IEvaluatedExpression>();
 
+        protected bool IsSyntaxNode(string type) => node.SyntaxInfo.HasSyntaxNode(type);
+
         public IEnumerable<string> FunctionNames
         {
             get

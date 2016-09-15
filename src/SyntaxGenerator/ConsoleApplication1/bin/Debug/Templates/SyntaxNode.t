@@ -1,36 +1,28 @@
 <#set TemplateType = "SyntaxNode"#>
 
-<#FieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: false, withSC: false)#>
-<#FieldNamesWithSC = FieldName(kind: "Any", includeParents: true, syntaxOnly: false, withSC: true)#>
-<#SelfFieldNames = FieldName(kind: "Any", includeParents: false, syntaxOnly: false, withSC: false)#>
-<#SelfFieldNamesWithSC = FieldName(kind: "Any", includeParents: false, syntaxOnly: false, withSC: true)#>
-<#SyntaxFieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: true, withSC: false)#>
-<#ListName = FieldName(kind: "List", includeParents: false, syntaxOnly: true, withSC: false)#>
-<#SimpleSyntaxFieldNames = FieldName(kind: "Simple", includeParents: true, syntaxOnly: true, withSC: false)#>
-<#SimpleSelfFieldNames = FieldName(kind: "Simple", includeParents: false, syntaxOnly: false, withSC: false)#>
+<#FieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: false)#>
+<#SelfFieldNames = FieldName(kind: "Any", includeParents: false, syntaxOnly: false)#>
+<#SyntaxFieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: true)#>
+<#SimpleSyntaxFieldNames = FieldName(kind: "Simple", includeParents: true, syntaxOnly: true)#>
+<#SimpleSelfFieldNames = FieldName(kind: "Simple", includeParents: false, syntaxOnly: false)#>
+<#ListName = FieldName(kind: "List", includeParents: false, syntaxOnly: true)#>
 
 
-<#FieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: false, withSC: false)#>
-<#FieldTypes = FieldType(kind: "Any", includeParents: true, syntaxOnly: false, withSC: false)#>
-<#FieldTypesWithSC = FieldType(kind: "Any", includeParents: true, syntaxOnly: false, withSC: true)#>
-<#SelfFieldTypes = FieldType(kind: "Any", includeParents: false, syntaxOnly: false, withSC: false)#>
-<#SelfFieldTypesWithSC = FieldType(kind: "Any", includeParents: false, syntaxOnly: false, withSC: true)#>
-<#ListType = FieldType(kind: "List", includeParents: false, syntaxOnly: true, withSC: false)#>
+<#FieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: false)#>
+<#FieldTypes = FieldType(kind: "Any", includeParents: true, syntaxOnly: false)#>
+<#SelfFieldTypes = FieldType(kind: "Any", includeParents: false, syntaxOnly: false)#>
+<#SelfFieldTypesWithSC = FieldType(kind: "Any", includeParents: false, syntaxOnly: false)#>
+<#ListType = FieldType(kind: "List", includeParents: false, syntaxOnly: true)#>
 <#ListElementType = ListElementType(includeParents: false, syntaxOnly: true)#>
-<#SimpleSyntaxFieldTypes = FieldType(kind: "Simple", includeParents: true, syntaxOnly: true, withSC: false)#>
-<#SimpleSelfFieldTypes = FieldType(kind: "Simple", includeParents: false, syntaxOnly: false, withSC: false)#>
+<#SimpleSyntaxFieldTypes = FieldType(kind: "Simple", includeParents: true, syntaxOnly: true)#>
+<#SimpleSelfFieldTypes = FieldType(kind: "Simple", includeParents: false, syntaxOnly: false)#>
 
 <#SimpleConstructorParams = "{SelfFieldTypes} _{SelfFieldNames}" join ", "#>
 <#SimpleConstructorBody = "this._{SelfFieldNames} = _{SelfFieldNames};" join "\n"#>
 
-<#SimpleConstructorParamsWithSC = "{SelfFieldTypesWithSC} _{SelfFieldNamesWithSC}" join ", "#>
-<#SimpleConstructorBodyWithSC = "this._{SelfFieldNamesWithSC} = _{SelfFieldNamesWithSC};" join "\n"#>
 
 <#FullConstructorParams = "{FieldTypes} _{FieldNames}" join ", "#>
 <#FullConstructorBody = "this._{FieldNames} = _{FieldNames};" join "\n"#>
-
-<#FullConstructorParamsWithSC = "{FieldTypesWithSC} _{FieldNamesWithSC}" join ", "#>
-<#FullConstructorBodyWithSC = "this._{FieldNamesWithSC} = _{FieldNamesWithSC};" join "\n"#>
 
 <#SimpleFieldsDeclaration = "protected {SimpleSelfFieldTypes} _{SimpleSelfFieldNames};" join "\n"#>
 <#ListFieldsDeclaration = "protected {ListType} _{ListName} = new {ListType}();" join "\n"#>
@@ -96,22 +88,26 @@ public partial class <#NodeName#><#" : {BaseNodeName}"#>
         <#SimpleConstructorBody#>
     }
         <#if NotSyntaxTreeNode
-    public <#NodeName#>(<#SimpleConstructorParamsWithSC#>)
+    public <#NodeName#>(<#SimpleConstructorParams#>, SourceContext sc)
     {
-        <#SimpleConstructorBodyWithSC#>
+        <#SimpleConstructorBody#>
+        _source_context = sc;
     }
         #>
     #>
+    
     <# if HasInheritedFields
     public <#NodeName#>(<#FullConstructorParams#>)
     {
         <#FullConstructorBody#>
     }
     
-    public <#NodeName#>(<#FullConstructorParamsWithSC#>)
+    public <#NodeName#>(<#FullConstructorParams#>, SourceContext sc)
     {
-        <#FullConstructorBodyWithSC#>
+        <#FullConstructorBody#>
+        _source_context = sc;
     }#>
+    
     <# if HasSingleList
     public <#NodeName#>(<#ListElementType#> elem, SourceContext sc = null)
     {

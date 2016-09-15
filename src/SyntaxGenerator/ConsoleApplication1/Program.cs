@@ -17,12 +17,14 @@ namespace ConsoleApplication1
         static void Generate()
         {
             var xmlPath = @".\Tree.xml";
-            var outputPath = @".\Tree.cs";
+            var outputPath = @".\";
             var templatesPath = @".\Templates";
             SyntaxTree tree = SyntaxTree.Deserialize(xmlPath);
             var templateStorage = TemplateStorageBuilder.LoadFromFolder(new DirectoryInfo(templatesPath));
             SyntaxTreeGenerator generator = new SyntaxTreeGenerator(templateStorage);
-            File.WriteAllText(outputPath, generator.Generate(tree));
+            File.WriteAllText(outputPath + "Tree.cs", generator.GenerateTree(tree));
+            File.WriteAllText(outputPath + "SyntaxTreeStreamWriter.cs", generator.GenerateWriter(tree));
+            File.WriteAllText(outputPath + "SyntaxTreeStreamReader.cs", generator.GenerateReader(tree));
         }
 
         static void Convert()

@@ -7,37 +7,34 @@ using SyntaxGenerator.TemplateNodes;
 
 namespace SyntaxGenerator.CodeGeneration
 {
-    public class SyntaxTreeFileFunctionTable : IFunctionTable
+    public class SingleValueFunctionTable : IFunctionTable
     {
-        private static readonly string syntaxTreeCode = "SyntaxTreeNodes";
+        private string _funcName;
 
         private IEnumerable<string> _syntaxNodes;
 
-        public SyntaxTreeFileFunctionTable(IEnumerable<string> syntaxNodes)
+        public SingleValueFunctionTable(string funcName, IEnumerable<string> syntaxNodes)
         {
+            _funcName = funcName;
             _syntaxNodes = syntaxNodes;
         }
 
-        public IEnumerable<string> ConditionNames
-        {
-            get
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
+        public IEnumerable<string> ConditionNames => Enumerable.Empty<string>();
 
         public IEnumerable<string> FunctionNames
         {
             get
             {
-                yield return syntaxTreeCode;
+                yield return _funcName;
             }
         }
 
         public IEnumerable<string> CallFunction(string name, IFunctionParameters parameters)
         {
-            if (name == syntaxTreeCode)
+            if (name == _funcName)
                 return _syntaxNodes;
+            else
+                throw new ArgumentException($"{name}: no such function");
 
             throw new ArgumentException(nameof(name));
         }

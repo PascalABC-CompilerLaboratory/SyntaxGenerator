@@ -40,15 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGeneration\FunctionTables\ConditionExpression.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\IEvaluatedExpression.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\Utility\ConditionExpression.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\Utility\IEvaluatedExpression.cs" />
     <Compile Include="CodeGeneration\FunctionTables\SyntaxFunctionTable.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\SyntaxTreeFileFunctionTable.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\TextExpression.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\SingleValueFunctionTable.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\Utility\TextExpression.cs" />
     <Compile Include="CodeGeneration\StringExtensions.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\SyntaxStreamFunctionTable.cs" />
     <Compile Include="CodeGeneration\SyntaxTreeGenerator.cs" />
     <Compile Include="CodeGeneration\SyntaxInfo.cs" />
     <Compile Include="CodeGeneration\SyntaxNodeInfo.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\SyntaxReaderFileFunctionTable.cs" />
     <Compile Include="CodeGeneration\TableStorage.cs" />
     <Compile Include="CodeGeneration\TemplateStorage.cs" />
     <Compile Include="CodeGeneration\Visitors\TemplateCleaner.cs" />
@@ -79,8 +81,8 @@
     <Compile Include="TemplateNodes\TemplateNodeExtensions.cs" />
     <Compile Include="CodeGeneration\Visitors\CodeGenerator.cs" />
     <Compile Include="CodeGeneration\Visitors\ExpressionEvaluator.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\FunctionParameters.cs" />
-    <Compile Include="CodeGeneration\FunctionTables\IFunctionParameters.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\Utility\FunctionParameters.cs" />
+    <Compile Include="CodeGeneration\FunctionTables\Utility\IFunctionParameters.cs" />
     <Compile Include="CodeGeneration\FunctionTables\IFunctionTable.cs" />
     <Compile Include="CodeGeneration\FunctionTables\AbstractSyntaxFunctionTable.cs" />
     <Compile Include="VisitorInterfaces\IVisitor.cs" />

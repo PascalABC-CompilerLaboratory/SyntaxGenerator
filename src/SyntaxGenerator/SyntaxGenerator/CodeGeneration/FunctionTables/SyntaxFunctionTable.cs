@@ -28,6 +28,7 @@ namespace SyntaxGenerator.CodeGeneration
             conditions["HasInheritedFields"] = HasInheritedFields;
             conditions["HasFields"] = HasFields;
             conditions["NotSyntaxTreeNode"] = NotSyntaxTreeNode;
+            conditions["SyntaxTreeNode"] = SyntaxTreeNode;
             conditions["HasSingleList"] = HasSingleList;
         }
 
@@ -50,13 +51,9 @@ namespace SyntaxGenerator.CodeGeneration
             var includeParents = parameters.GetValue<bool>("includeParents");
             var syntaxOnly = parameters.GetValue<bool>("syntaxOnly");
             var kind = parameters.GetValue<string>("kind");
-            var withSC = parameters.GetValue<bool>("withSC");
 
             foreach (Field field in FilterFields(node, kind, includeParents, syntaxOnly))
                 yield return field.Type;
-
-            if (withSC)
-                yield return "SourceContext";
         }
 
         public IEnumerable<string> FieldName(IFunctionParameters parameters)
@@ -64,13 +61,9 @@ namespace SyntaxGenerator.CodeGeneration
             var includeParents = parameters.GetValue<bool>("includeParents");
             var syntaxOnly = parameters.GetValue<bool>("syntaxOnly");
             var kind = parameters.GetValue<string>("kind");
-            var withSC = parameters.GetValue<bool>("withSC");
 
             foreach (Field field in FilterFields(node, kind, includeParents, syntaxOnly))
                 yield return field.Name;
-
-            if (withSC)
-                yield return "source_context";
         }
 
         public IEnumerable<string> ListElementType(IFunctionParameters parameters)
@@ -79,7 +72,7 @@ namespace SyntaxGenerator.CodeGeneration
             var syntaxOnly = parameters.GetValue<bool>("syntaxOnly");
 
             foreach (Field field in FilterFields(node, "List", includeParents, syntaxOnly))
-                yield return field.ListType;
+                yield return field.ListElementType;
         }
 
         private IEnumerable<Field> FilterFields(SyntaxNodeInfo node, string kind, bool includeParents, bool syntaxOnly)
@@ -87,7 +80,7 @@ namespace SyntaxGenerator.CodeGeneration
             Predicate<Field> FieldSyntaxFilter = (Field field) =>
             {
                 if (field.IsList)
-                    return syntaxOnly ? node.SyntaxInfo.HasSyntaxNode(field.ListType) : true;
+                    return syntaxOnly ? node.SyntaxInfo.HasSyntaxNode(field.ListElementType) : true;
                 else
                     return syntaxOnly ? node.SyntaxInfo.HasSyntaxNode(field.Type) : true;
             };
@@ -157,6 +150,11 @@ namespace SyntaxGenerator.CodeGeneration
         public bool HasInheritedFields(IFunctionParameters parameters)
         {
             return FilterFields(node, kind: "Any", includeParents: true, syntaxOnly: false).Count() > node.Fields.Count();
+        }
+
+        public bool SyntaxTreeNode(IFunctionParameters parameters)
+        {
+            return node.Name == "syntax_tree_node" ? true : false;
         }
 
         public bool NotSyntaxTreeNode(IFunctionParameters parameters)

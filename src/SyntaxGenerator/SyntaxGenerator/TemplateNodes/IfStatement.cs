@@ -9,7 +9,6 @@ namespace SyntaxGenerator.TemplateNodes
 {
     public class IfStatement : IStatement
     {
-        // TODO: Заменить FunctionCall на Condition, убрать из предков IExpression
         public FunctionCall Condition { get; set; }
 
         public List<ICodePart> Body { get; set; }

@@ -18,7 +18,7 @@ namespace SyntaxGenerator.SyntaxNodes.Model
 
         public bool IsList => Type.StartsWith("List<");
 
-        public string ListType => IsList ? 
+        public string ListElementType => IsList ? 
             string.Concat(Type.Skip(5).TakeWhile(c => c != '>')) : 
             "";
 

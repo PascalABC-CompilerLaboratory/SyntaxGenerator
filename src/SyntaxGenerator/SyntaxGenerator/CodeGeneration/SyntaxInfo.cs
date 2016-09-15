@@ -22,7 +22,7 @@ namespace SyntaxGenerator.CodeGeneration
         /// <summary>
         /// Список узлов
         /// </summary>
-        public IEnumerable<SyntaxNodeInfo> Nodes => _nodesInfo;
+        public IList<SyntaxNodeInfo> Nodes => _nodesInfo;
             
         private SyntaxNodeInfo BuildSyntaxNodeInfo(SyntaxNode node, SyntaxTree tree)
         {
