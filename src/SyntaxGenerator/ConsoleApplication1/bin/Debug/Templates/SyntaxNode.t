@@ -11,7 +11,6 @@
 <#FieldNames = FieldName(kind: "Any", includeParents: true, syntaxOnly: false)#>
 <#FieldTypes = FieldType(kind: "Any", includeParents: true, syntaxOnly: false)#>
 <#SelfFieldTypes = FieldType(kind: "Any", includeParents: false, syntaxOnly: false)#>
-<#SelfFieldTypesWithSC = FieldType(kind: "Any", includeParents: false, syntaxOnly: false)#>
 <#ListType = FieldType(kind: "List", includeParents: false, syntaxOnly: true)#>
 <#ListElementType = ListElementType(includeParents: false, syntaxOnly: true)#>
 <#SimpleSyntaxFieldTypes = FieldType(kind: "Simple", includeParents: true, syntaxOnly: true)#>
